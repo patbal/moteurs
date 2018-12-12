@@ -1,0 +1,67 @@
+.navbar {
+    margin-bottom: 0;
+    background-color: #07347c;
+    z-index: 9999;
+    border: 0;
+    font-size: 12px;
+    line-height: 1.42857143 !important;
+    letter-spacing: 4px;
+    border-radius: 0;
+}
+
+.navbar li a, .navbar .navbar-brand {
+    color: #fff !important;
+}
+
+.navbar-nav li a:hover, .navbar-nav li.active a {
+    color: #f4511e !important;
+    background-color: #fff !important;
+}
+
+.navbar-default .navbar-toggle {
+    border-color: transparent;
+    color: #fff !important;
+}
+
+.dropdown-menu{
+    background-color: #07347c;
+    padding: 4px;
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+li.remarque{
+    background-color: #FCF8E4;
+    color: #896C3F !important;
+}
+
+li.attention{
+    background-color: #efd6d6;
+    color: #963133 !important;
+}
+
+.effectue{
+    background-color: #D8EECF;
+    color: #30652E !important;
+}
+
+tr.italic{
+    font-style: italic;
+    color: #5F5F5F;
+    font-size: 90%;
+}
+
+tr.strikeout {
+    font-style: unset ;
+}
+
+body {
+    padding-top: 65px;
+    font-size: 14px;
+    background-color: #e0e0e0;
+}
+
+.datepicker {
+    background-color: #fff ;
+    color: #333 ;
+}
