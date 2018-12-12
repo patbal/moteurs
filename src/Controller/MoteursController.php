@@ -93,7 +93,7 @@ class MoteursController extends AbstractController
             }
         }
 
-        $this -> addFlash('success', 'QRCodes des moteurs générés');
+        $this -> addFlash('notice', 'QRCodes des moteurs générés');
         return $this -> redirectToRoute('mot');
 
     }

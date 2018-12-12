@@ -14,10 +14,9 @@
     <div class="row">
         {% for file in files %}
             <div class="col-2 card border-warning">
+                <div class="card-header text-center text-muted">{{ file.Filename|trim('.png') }}</div>
                 <img class="card-img-top" src="../../{{ file  }}" alt="Mince, pas d'image...">
-                <div class="card-body">
-                    <p class="card-title text-center text-muted">{{ file.Filename|trim('.png') }}</p>
-                    <hr>
+                <div class="card-footer">
                     <div class = 'text-warning text-center'><a href="/certificats/{{ cat }}/{{ file.Filename|trim('.png') }}.pdf">PV</a> </div>
                 </div>
             </div>
