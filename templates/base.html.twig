@@ -43,10 +43,10 @@
                                aria-expanded="false">LISTE</a>
                             <div class="dropdown-menu" aria-labelledby="Preview">
                                 <h6 class="dropdown-header">QRcodes</h6>
-                                <a class="dropdown-item" href="">250kg</a>
-                                <a class="dropdown-item" href="">500kg</a>
-                                <a class="dropdown-item" href="">1000kg</a>
-                                <a class="dropdown-item" href="">Tous</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': '250'}) }}">250kg</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': '500'}) }}">500kg</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': '1000'}) }}">1000kg</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'all'}) }}">Tous</a>
                             </div>
                         </li>
                         <li class="nav-item dropdown">
