@@ -42,11 +42,17 @@
                                aria-haspopup="true"
                                aria-expanded="false">LISTE</a>
                             <div class="dropdown-menu" aria-labelledby="Preview">
-                                <h6 class="dropdown-header">QRcodes</h6>
-                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': '250'}) }}">250kg</a>
-                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': '500'}) }}">500kg</a>
-                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': '1000'}) }}">1000kg</a>
-                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'all'}) }}">Tous</a>
+                                <h6 class="dropdown-header">QRCodes Moteurs</h6>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'm250'}) }}">250kg</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'm500'}) }}">500kg</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'm1000'}) }}">1000kg</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'm2000'}) }}">2000kg</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'mall'}) }}">Tous</a>
+                                <h6 class="dropdown-header">QRCodes Stop chutes</h6>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'sc400'}) }}">400kg</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'sc500'}) }}">500kg</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'sc1000'}) }}">1000kg</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'scall'}) }}">Tous</a>
                             </div>
                         </li>
                         <li class="nav-item dropdown">

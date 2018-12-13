@@ -40,56 +40,61 @@ class MoteursController extends AbstractController
         $mot250 = new Finder();
         $mot500 = new Finder();
         $mot1000 = new Finder();
-        $mot250->files()->name('*.pdf') -> in('certificats/250/');
-        $mot500->files()->name('*.pdf') -> in('certificats/500/');
-        $mot1000->files()->name('*.pdf') -> in('certificats/1000/');
+        $mot2000 = new Finder();
+        $mot250->files()->name('*.pdf') -> in('certificats/m250/');
+        $mot500->files()->name('*.pdf') -> in('certificats/m500/');
+        $mot1000->files()->name('*.pdf') -> in('certificats/m1000/');
+        $mot2000->files()->name('*.pdf') -> in('certificats/m2000/');
+        $sc400 = new Finder();
+        $sc500 = new Finder();
+        $sc1000 = new Finder();
+        $sc400->files()->name('*.pdf') -> in('certificats/sc400/');
+        $sc500->files()->name('*.pdf') -> in('certificats/sc500/');
+        $sc1000->files()->name('*.pdf') -> in('certificats/sc1000/');
 
-        //on boucle sur chaque finder pour générer le QRCode correspondant
-        if (!empty($mot250))
+        $types = array($mot250, $mot500, $mot1000, $mot2000, $sc400, $sc500, $sc1000);
+
+        //On boucle sur les valeurs des objets files
+        foreach ($types as $type)
         {
-            foreach ($mot250 as $moteur)
+            if (!empty($type))
+            switch ($type)
             {
-                $nom_fichier = $moteur -> getFilename();
-                $nom_fichier_sans_extension = trim($nom_fichier, '.pdf');
-                $url = $moteur -> getRealPath();
-                //on crée le QRCode
-                $qrCode = new QrCode();
-                $qrCode->setText($url);
-                $qrCode->setSize(200);
-                //et on écrit le fichier
-                $qrCode->writeFile('images/qrcodes/250/' . $nom_fichier_sans_extension . '.png');
+                case $mot250 :
+                    $rep = 'm250';
+                    break;
+                case $mot500 :
+                    $rep = 'm500';
+                    break;
+                case $mot1000 :
+                    $rep = 'm1000';
+                    break;
+                case $mot2000 :
+                    $rep = 'm2000';
+                    break;
+                case $sc400 :
+                    $rep = 'sc400';
+                    break;
+                case $sc500 :
+                    $rep = 'sc500';
+                    break;
+                case $sc1000 :
+                    $rep = 'sc1000';
+                    break;
             }
-        }
-
-        if (!empty($mot500))
-        {
-            foreach ($mot500 as $moteur)
             {
-                $nom_fichier = $moteur -> getFilename();
-                $nom_fichier_sans_extension = trim($nom_fichier, '.pdf');
-                $url = $moteur -> getRealPath();
-                //on crée le QRCode
-                $qrCode = new QrCode();
-                $qrCode->setText($url);
-                $qrCode->setSize(200);
-                //et on écrit le fichier
-                $qrCode->writeFile('images/qrcodes/500/' . $nom_fichier_sans_extension . '.png');
-            }
-        }
-
-        if (!empty($mot1000))
-        {
-            foreach ($mot1000 as $moteur)
-            {
-                $nom_fichier = $moteur -> getFilename();
-                $nom_fichier_sans_extension = trim($nom_fichier, '.pdf');
-                $url = $moteur -> getRealPath();
-                //on crée le QRCode
-                $qrCode = new QrCode();
-                $qrCode->setText($url);
-                $qrCode->setSize(200);
-                //et on écrit le fichier
-                $qrCode->writeFile('images/qrcodes/1000/' . $nom_fichier_sans_extension . '.png');
+                foreach ($type as $element)
+                {
+                    $nom_fichier = $element -> getFilename();
+                    $nom_fichier_sans_extension = trim($nom_fichier, '.pdf');
+                    $url = $element -> getRealPath();
+                    //on crée le QRCode
+                    $qrCode = new QrCode();
+                    $qrCode->setText($url);
+                    $qrCode->setSize(200);
+                    //et on écrit le fichier
+                    $qrCode->writeFile('images/qrcodes/'.$rep.'/' . $nom_fichier_sans_extension . '.png');
+                }
             }
         }
 
@@ -103,7 +108,7 @@ class MoteursController extends AbstractController
      */
     public function viewQrCodes(string $cat)
     {
-        $vals = array('250', '500', '1000', 'all');
+        $vals = array('m250', 'm500', 'm1000', 'm2000','mall', 'sc400', 'sc500', 'sc1000', 'sc2000', 'scall');
         $isAll = False;
 
         if(!in_array($cat, $vals))
@@ -114,10 +119,14 @@ class MoteursController extends AbstractController
 
         $finder = new Finder();
 
-        if ($cat=='all')
+        if ($cat=='mall')
         {
-            $isAll = true;
-            $finder->files()->name('*.png') -> sortByName(true) -> in('images/qrcodes/*/');
+            $finder->files()->name('*.png') -> sortByName(true) -> in('images/qrcodes/m*/');
+        }
+
+        elseif ($cat=='scall')
+        {
+            $finder->files()->name('*.png') -> sortByName(true) -> in('images/qrcodes/sc*/');
         }
 
         else{
@@ -127,7 +136,6 @@ class MoteursController extends AbstractController
         return $this->render('moteurs/affichageQrCodes.html.twig', array(
             'files' => $finder,
             'cat' => $cat,
-            'isAll' => $isAll
         ));
     }
 }
