@@ -27,7 +27,8 @@
 
         <nav class="navbar fixed-top navbar-expand-lg navbar-light" style="background-color: #07347c;">
             <div class="container">
-                <a class="navbar-brand" href="#">PBsofts</a>
+                <a href="#" class="navbar-left"><img src="/images/logo_MATCHevent.png" width="120px"></a>
+                {#<a class="navbar-brand" href="{{ path('mot') }}">by PBsofts</a>#}
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -80,7 +81,7 @@
                                aria-haspopup="true"
                                aria-expanded="false">EDIT</a>
                             <div class="dropdown-menu" aria-labelledby="Preview2">
-                                <a class="dropdown-item" href="{{ path('mot') }}">Transporteurs</a>
+                                <a class="dropdown-item" href="{{ path('index') }}">Transporteurs</a>
                                 <a class="dropdown-item" href="">Adresses</a>
                                 <a class="dropdown-item" href="">Contacts</a>
                                 <a class="dropdown-item" href="">Factures</a>
@@ -110,16 +111,25 @@
     {% block body %}
     {% endblock %}
 
-    <footer>
+
+    <footer class="footer">
+        <br>
+        <br>
+        <br>
         <div class="container">
+            <div class="row">
+                <span class="col-2 text-muted footer-y">MATCHsoftware</span>
+                <span class="col-2 text-muted footer-c">© {{ 'now'|date('Y') }}</span>
+                <span class="col-2 text-muted footer-m">and beyond.</span>
+            </div>
+        </div>
+    </footer>
             {#{% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                 <span>Connecté en tant que {{ app.user.username|title }} - <a href="{{ path('fos_user_security_logout') }}">Déconnexion</a></span>
             {% else %}
                 <a href="{{ path('fos_user_security_login') }}">Connexion</a>
             {% endif %}#}
 
-            <p>Dushow Toulouse Transport © {{ 'now'|date('Y') }} and beyond.</p>
-        </div>
     </footer>
 
 </div>

@@ -22,11 +22,11 @@ class MoteursController extends AbstractController
     }
 
     /**
-     * @Route("/moteurs", name="mot")
+     * @Route("/gestion", name="gestion")
      */
-    public function mot()
+    public function gestion()
     {
-        return $this->render('moteurs/index.html.twig', [
+        return $this->render('moteurs/genQRCodes.html.twig', [
             'controller_name' => 'MoteursController',
         ]);
     }
@@ -58,6 +58,8 @@ class MoteursController extends AbstractController
         foreach ($types as $type)
         {
             if (!empty($type))
+
+            //On détermine une variable "rep" pour écrire plus tard l'image dans le bon répertoire
             switch ($type)
             {
                 case $mot250 :
@@ -114,7 +116,7 @@ class MoteursController extends AbstractController
         if(!in_array($cat, $vals))
         {
             $this->addFlash('alert', 'Les valeurs personnalisées ne sont pas autorisées dans la barre d\'adresse');
-            return $this->redirectToRoute('mot');
+            return $this->redirectToRoute('index');
         }
 
         $finder = new Finder();

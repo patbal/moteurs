@@ -1,0 +1,30 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}QrCodes{% endblock %}
+
+{% block header %}
+<div id="header" class="card text-center">
+
+    <h1>QRCodes — Gestion</h1>
+
+</div>
+{% endblock %}
+
+{% block moteurs_body %}
+    <p></p>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col"></div>
+            <div class="col-8">
+                <a class="btn btn-outline-secondary btn-sm btn-block" href="{{ path('index') }}">Impression des QRCodes</a>
+                <a class="btn btn-outline-secondary btn-sm btn-block" href="{{ path('gestion') }}">Générateur de QRCodes</a>
+                <a class="btn btn-outline-secondary btn-sm btn-block" href="{{ path('index') }}">Secondary</a>
+            </div>
+            <div class="col"></div>
+
+        </div>
+    </div>
+
+
+
+{% endblock %}

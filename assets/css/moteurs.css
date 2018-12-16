@@ -65,3 +65,16 @@ body {
     background-color: #fff ;
     color: #333 ;
 }
+
+.footer-y {
+    background-color: yellow;
+}
+
+.footer-c {
+    background-color: cyan;
+}
+
+.footer-m {
+    background-color: magenta;
+}
+
