@@ -6,6 +6,7 @@ use Endroid\QrCode\QrCode;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Tests\Compiler\F;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class MoteursController extends AbstractController
@@ -26,7 +27,7 @@ class MoteursController extends AbstractController
      */
     public function gestion()
     {
-        return $this->render('moteurs/genQRCodes.html.twig', [
+        return $this->render('moteurs/gestionQRCodes.html.twig', [
             'controller_name' => 'MoteursController',
         ]);
     }
@@ -108,10 +109,10 @@ class MoteursController extends AbstractController
     /**
      * @Route("/view/qrCodes/{cat}", name="viewQrCodes")
      */
-    public function viewQrCodes(string $cat)
+    public function viewQrCodes(Request $request, string $cat)
     {
-        $vals = array('m250', 'm500', 'm1000', 'm2000','mall', 'sc400', 'sc500', 'sc1000', 'sc2000', 'scall');
-        $isAll = False;
+        $vals = array('m250', 'm500', 'm1000', 'm2000','mall', 'sc400', 'sc500', 'sc1000', 'scall');
+        $page = $request -> get('page');
 
         if(!in_array($cat, $vals))
         {
@@ -135,7 +136,7 @@ class MoteursController extends AbstractController
             $finder->files()->name('*.png') -> sortByName(true) -> in('images/qrcodes/'.$cat);
         }
 
-        return $this->render('moteurs/affichageQrCodes.html.twig', array(
+        return $this->render('moteurs/'.$page.'QrCodes.html.twig', array(
             'files' => $finder,
             'cat' => $cat,
         ));

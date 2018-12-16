@@ -44,16 +44,16 @@
                                aria-expanded="false">LISTE</a>
                             <div class="dropdown-menu" aria-labelledby="Preview">
                                 <h6 class="dropdown-header">QRCodes Moteurs</h6>
-                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'm250'}) }}">250kg</a>
-                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'm500'}) }}">500kg</a>
-                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'm1000'}) }}">1000kg</a>
-                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'm2000'}) }}">2000kg</a>
-                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'mall'}) }}">Tous</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'm250', 'page': 'view'}) }}">250kg</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'm500', 'page': 'view'}) }}">500kg</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'm1000', 'page': 'view'}) }}">1000kg</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'm2000', 'page': 'view'}) }}">2000kg</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'mall', 'page': 'view'}) }}">Tous</a>
                                 <h6 class="dropdown-header">QRCodes Stop chutes</h6>
-                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'sc400'}) }}">400kg</a>
-                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'sc500'}) }}">500kg</a>
-                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'sc1000'}) }}">1000kg</a>
-                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'scall'}) }}">Tous</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'sc400', 'page': 'view'}) }}">400kg</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'sc500', 'page': 'view'}) }}">500kg</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'sc1000', 'page': 'view'}) }}">1000kg</a>
+                                <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'scall', 'page': 'view'}) }}">Tous</a>
                             </div>
                         </li>
                         <li class="nav-item dropdown">
@@ -87,13 +87,9 @@
                                 <a class="dropdown-item" href="">Factures</a>
                             </div>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">APP
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('gestion') }}">ADMIN
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="Preview">
-                                <a class="dropdown-item" href="">GesTrans</a>
-                                <a class="dropdown-item" href="">GesCam</a>
-                            </div>
                         </li>
                     </ul>
                 </div>
@@ -118,6 +114,7 @@
         <br>
         <div class="container">
             <div class="row">
+                <div class="col-3"></div>
                 <span class="col-2 text-muted footer-y">MATCHsoftware</span>
                 <span class="col-2 text-muted footer-c">© {{ 'now'|date('Y') }}</span>
                 <span class="col-2 text-muted footer-m">and beyond.</span>

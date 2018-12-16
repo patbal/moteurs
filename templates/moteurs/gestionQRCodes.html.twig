@@ -1,0 +1,75 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}QrCodes{% endblock %}
+
+{% block header %}
+<div id="header" class="card text-center">
+
+    <h1>QRCodes — Gestion</h1>
+
+</div>
+{% endblock %}
+
+{% block moteurs_body %}
+    <p></p>
+    <div class="container">
+        <br><br>
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8">
+                <a class="btn btn-outline-primary btn-sm btn-block" href="{{ path('viewQrCodes', {'cat': 'mall', 'page': 'impression'}) }}" target="_blank">Impression de tous les QRCodes moteurs</a>
+            </div>
+            <div class="col-2"></div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col">
+                <a class="btn btn-outline-secondary btn-sm btn-block" href="{{ path('viewQrCodes', {'cat': 'm250', 'page': 'impression'}) }}" target="_blank">Print 250kg</a>
+            </div>
+            <div class="col">
+                <a class="btn btn-outline-secondary btn-sm btn-block" href="{{ path('viewQrCodes', {'cat': 'm500', 'page': 'impression'}) }}" target="_blank">Print 500kg</a>
+            </div>
+            <div class="col">
+                <a class="btn btn-outline-secondary btn-sm btn-block" href="{{ path('viewQrCodes', {'cat': 'm1000', 'page': 'impression'}) }}" target="_blank">Print 1T</a>
+            </div>
+            <div class="col">
+                <a class="btn btn-outline-secondary btn-sm btn-block" href="{{ path('viewQrCodes', {'cat': 'm2000', 'page': 'impression'}) }}" target="_blank">Print 2T</a>
+            </div>
+            <div class="col-2"></div>
+        </div>
+        <br><br>
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8">
+                <a class="btn btn-outline-primary btn-sm btn-block" href="{{ path('viewQrCodes', {'cat': 'scall', 'page': 'impression'}) }}" target="_blank">Impression de tous les QRCodes stop-chutes</a>
+            </div>
+            <div class="col-2"></div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col">
+                <a class="btn btn-outline-secondary btn-sm btn-block" href="{{ path('viewQrCodes', {'cat': 'sc400', 'page': 'impression'}) }}" target="_blank">Print 250kg</a>
+            </div>
+            <div class="col">
+                <a class="btn btn-outline-secondary btn-sm btn-block" href="{{ path('viewQrCodes', {'cat': 'sc500', 'page': 'impression'}) }}" target="_blank">Print 500kg</a>
+            </div>
+            <div class="col">
+                <a class="btn btn-outline-secondary btn-sm btn-block" href="{{ path('viewQrCodes', {'cat': 'sc1000', 'page': 'impression'}) }}" target="_blank">Print 1T</a>
+            </div>
+            <div class="col-2"></div>
+        </div>
+        <br><br>
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col">
+                <a class="btn btn-outline-primary btn-sm btn-block" href="{{ path('genQRCodes') }}" onclick="return confirm('ATTENTION : re-générer TOUS les QRCodes ? Cette opération peut prendre quelques minutes. Veuillez patienter jusq\'à la fin de \'opération');">Générateur de QRCodes</a>
+            </div>
+            <div class="col-2"></div>
+        </div>
+    </div>
+
+
+
+{% endblock %}
