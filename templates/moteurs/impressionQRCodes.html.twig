@@ -22,36 +22,17 @@
 
 {% block header %}
     <div id="header" class="card text-center">
-        {% if 'm250' in cat %}{% set titre = 'moteurs 250kg' %}{% endif %}
-        {% if 'm500' in cat %}{% set titre = 'moteurs 500kg' %}{% endif %}
-        {% if 'm1000' in cat %}{% set titre = 'moteurs 1000kg' %}{% endif %}
-        {% if 'm2000' in cat %}{% set titre = 'moteurs 2000kg' %}{% endif %}
-        {% if 'mall' in cat %}{% set titre = 'moteurs' %}{% endif %}
-        {% if 'sc400' in cat %}{% set titre = 'stop-chutes 400kg' %}{% endif %}
-        {% if 'sc500' in cat %}{% set titre = 'stop-chutes 500kg' %}{% endif %}
-        {% if 'sc1000' in cat %}{% set titre = 'stop-chutes 1000kg' %}{% endif %}
-        {% if 'scall' in cat %}{% set titre = 'stop-chutes' %}{% endif %}
-        <h1>Impression des certificats | <span class="badge badge-secondary">{{ files.count }}</span> {{ titre }}</h1>
+        <h1>Liste des certificats | <span class="badge badge-secondary">{{ moteurs|length }} {{ charge }}</span></h1>
     </div>
 {% endblock %}
 
 {% block moteurs_body %}
     <p></p>
     <div class="row">
-        {% for file in files %}
-            {% if 'm250' in file.realPath %}{% set rep = 'm250' %}
-            {% elseif 'm500' in file.realPath %}{% set rep = 'm500' %}
-            {% elseif 'm1000' in file.realPath %}{% set rep = 'm1000' %}
-            {% elseif 'm2000' in file.realPath %}{% set rep = 'm2000' %}
-            {% elseif 'sc400' in file.realPath %}{% set rep = 'sc400' %}
-            {% elseif 'sc500' in file.realPath %}{% set rep = 'sc500' %}
-            {% elseif 'sc1000' in file.realPath %}{% set rep = 'sc1000' %}
-            {% endif %}
-
+        {% for moteur in moteurs %}
             <div class="col-2 card border-warning">
-                <div class="card-header text-center text-muted">{{ file.Filename|trim('.png') }}</div>
-                <img class="card-img-top" src="../../{{ file  }}" alt="Mince, pas d'image...">
-
+                <div class="card-header text-center text-muted">{{ moteur.numeroMoteur }}</div>
+                <img class="card-img-top" src="../../{{ moteur.urlQRCode }}" alt="Mince, pas d'image...">
             </div>
         {% endfor %}
     </div>

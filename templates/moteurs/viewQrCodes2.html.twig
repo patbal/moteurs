@@ -1,0 +1,25 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}QrCodes{% endblock %}
+
+{% block header %}
+    <div id="header" class="card text-center">
+        <h1>Liste des certificats | <span class="badge badge-secondary">{{ moteurs|length }} </span></h1>
+    </div>
+{% endblock %}
+
+{% block moteurs_body %}
+    <p></p>
+    <div class="row">
+        {% for moteur in moteurs %}
+            <div class="col-2 card border-warning">
+                <div class="card-header text-center text-muted">{{ moteur.numeroMoteur }}</div>
+                <img class="card-img-top" src="../../{{ moteur.urlQRCode }}" alt="Mince, pas d'image...">
+                <div class="card-footer">
+                    <div class = 'text-warning text-center'><a href="{{ moteur.urlPV }}" target="_blank">PV</a> | {{ moteur.numeroMoteur }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

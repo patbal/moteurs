@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Moteur;
 use App\Entity\TypeMateriel;
 use Endroid\QrCode\QrCode;
+use PhpParser\Node\Stmt\ElseIf_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Tests\Compiler\F;
 use Symfony\Component\Finder\Finder;
@@ -83,7 +84,7 @@ class MoteursController extends AbstractController
                     break;
                 case $mot2000 :
                     $rep = 'm2000';
-                    $typeMat = array('m', '1000kg');
+                    $typeMat = array('m', '2000kg');
                     break;
                 case $sc400 :
                     $rep = 'sc400';
@@ -116,14 +117,23 @@ class MoteursController extends AbstractController
                         'type' => $typeMat[0],
                     ]);
 
-                    $moteur = new Moteur(); //préparation de l'objet moteur pour créer la base de donnée
+                    //on récupère le moteur dans la base s'il y est
+                    $moteur = $this -> getDoctrine() -> getRepository(Moteur::class) -> findOneBy([
+                        'numeroMoteur' => $nom_fichier_sans_extension,
+                    ]);
 
-                    $moteur -> setUrlPV($url);
+                    if(!$moteur) //s'il n'est pas dans la base on le crée
+                    {
+                        $moteur = new Moteur();
+                    }
+
+                    //$moteur -> setUrlPV($url);
                     $moteur -> setTypeMoteur($typeMat[1]);
                     $moteur -> setType($typeMateriel);
                     $moteur -> setEnService(true);
                     $moteur -> setNumeroMoteur($nom_fichier_sans_extension);
-                    $moteur -> setUrlQRCode(__DIR__);
+                    $moteur -> setUrlQRCode('/images/qrcodes/'.$rep.'/'.$nom_fichier_sans_extension.'.png');
+                    $moteur -> setUrlPV('/certificats/'.$rep.'/'.$nom_fichier);
 
                     $em -> persist($moteur);
                     $em -> flush();
@@ -142,8 +152,8 @@ class MoteursController extends AbstractController
      */
     public function viewQrCodes(Request $request, string $cat)
     {
+
         $vals = array('m250', 'm500', 'm1000', 'm2000','mall', 'sc400', 'sc500', 'sc1000', 'scall');
-        $page = $request -> get('page');
 
         if(!in_array($cat, $vals))
         {
@@ -151,25 +161,71 @@ class MoteursController extends AbstractController
             return $this->redirectToRoute('index');
         }
 
-        $finder = new Finder();
+        /*
+         * ///////////////////////////////////////////////////////
+         * il faut traiter le cas où $cat contient "all"
+         * ///////////////////////////////////////////////////////
+         */
 
-        if ($cat=='mall')
+        if (!preg_match('/[all]/', $cat))
         {
-            $finder->files()->name('*.png') -> sortByName(true) -> in('images/qrcodes/m*/');
+            $capa = preg_filter('/([a-z]+)(\d*)/', '$2', $cat);
+            $type = preg_filter('/([a-z]+)(\d*)/','$1', $cat);
+            $charge = $capa.'kg';
+            $typeEl = $this -> getDoctrine() -> getRepository(TypeMateriel::class) -> findOneBy(
+                [
+                    'type' => $type,
+                ]
+            );
+            $moteurs = $this -> getDoctrine() -> getRepository(Moteur::class) -> findBy([
+                'type' => $typeEl,
+                'typeMoteur' => $charge,
+            ]);
         }
 
-        elseif ($cat=='scall')
-        {
-            $finder->files()->name('*.png') -> sortByName(true) -> in('images/qrcodes/sc*/');
-        }
-
-        else{
-            $finder->files()->name('*.png') -> sortByName(true) -> in('images/qrcodes/'.$cat);
-        }
-
-        return $this->render('moteurs/'.$page.'QrCodes.html.twig', array(
-            'files' => $finder,
+        return $this -> render('moteurs/viewQrCodes2.html.twig', array(
+            'moteurs' => $moteurs,
             'cat' => $cat,
+            'charge' => $charge,
         ));
+
+    }
+
+    /**
+     * @Route("/print/qrCodes/{cat}", name="printQrCodes")
+     */
+    public function printQrCodes(Request $request, string $cat)
+    {
+
+        $vals = array('m250', 'm500', 'm1000', 'm2000','mall', 'sc400', 'sc500', 'sc1000', 'scall');
+
+        if(!in_array($cat, $vals))
+        {
+            $this->addFlash('alert', 'Les valeurs personnalisées ne sont pas autorisées dans la barre d\'adresse');
+            return $this->redirectToRoute('index');
+        }
+
+        if (!preg_match('/[all]/', $cat))
+        {
+            $capa = preg_filter('/([a-z]+)(\d*)/', '$2', $cat);
+            $type = preg_filter('/([a-z]+)(\d*)/','$1', $cat);
+            $charge = $capa.'kg';
+            $typeEl = $this -> getDoctrine() -> getRepository(TypeMateriel::class) -> findOneBy(
+                [
+                    'type' => $type,
+                ]
+            );
+            $moteurs = $this -> getDoctrine() -> getRepository(Moteur::class) -> findBy([
+                'type' => $typeEl,
+                'typeMoteur' => $charge,
+            ]);
+        }
+
+        return $this -> render('moteurs/impressionQRCodes.html.twig', array(
+            'moteurs' => $moteurs,
+            'cat' => $cat,
+            'charge' => $charge,
+        ));
+
     }
 }

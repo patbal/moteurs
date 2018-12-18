@@ -21,6 +21,11 @@ class TypeMateriel
      */
     private $type;
 
+    /**
+     * @ORM\Column(type="string", length=20)
+     */
+    private $nomComplet;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -34,6 +39,18 @@ class TypeMateriel
     public function setType(string $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getNomComplet(): ?string
+    {
+        return $this->nomComplet;
+    }
+
+    public function setNomComplet(string $nomComplet): self
+    {
+        $this->nomComplet = $nomComplet;
 
         return $this;
     }
