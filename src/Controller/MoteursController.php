@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Tests\Compiler\F;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 
@@ -262,6 +263,24 @@ class MoteursController extends AbstractController
             'charge' => $charge,
             'lev'=> $lev,
         ));
+
+    }
+
+    /**
+     * @Route("view/moteur/{id}", name="viewMotor")
+     */
+    public function viewMotor(Moteur $moteur, Request $request, $id)
+    {
+        if (null === $moteur)
+        {
+            throw new NotFoundHttpException("Ce moteur n'existe pas en base de donnée. Veuillez vérifier le numéro, ou régénérer la base de donnée.");
+        }
+
+        return $this->render('moteurs/viewMotor.html.twig', array(
+            'moteur' => $moteur,
+        ));
+
+
 
     }
 }

@@ -1,0 +1,30 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}QrCodes{% endblock %}
+
+{% block header %}
+    <div id="header" class="card text-center">
+        <h1>Carnet — {{ moteur.type.nomComplet|capitalize }} n°{{ moteur.numeroMoteur }}</h1>
+    </div>
+{% endblock %}
+
+{% block moteurs_body %}
+    <p></p>
+    <div class="container">
+        <div class="row">
+            <div class="col-3">
+                <div class="card border-dark mb-3" style="max-width: 18rem;">
+                    <img class="card-img-top" src="{{ moteur.urlQRCode }}" alt="QRCode moteur">
+                    <div class="card-header text-center text-success">QRCode actif</div>
+                    <div class="card-body text-dark">
+                        <h5 class="card-title">{{ moteur.type.nomComplet|capitalize }}</h5>
+                        <p class="card-text">CMU : {{ moteur.typeMoteur }}</p>
+                        <p class="card-text">n°série : {{ moteur.numeroMoteur }}</p>
+                        <p class="card-text"><a href="{{ moteur.urlPV }}" class="text-secondary" target="_blank">Affichage du PV</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

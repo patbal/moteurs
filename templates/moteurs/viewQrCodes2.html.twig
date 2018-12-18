@@ -16,7 +16,7 @@
                 <div class="card-header text-center text-muted">{{ moteur.numeroMoteur }}</div>
                 <img class="card-img-top" src="../../{{ moteur.urlQRCode }}" alt="Mince, pas d'image...">
                 <div class="card-footer">
-                    <div class = 'text-warning text-center'><a href="{{ moteur.urlPV }}" target="_blank">PV</a> | {{ moteur.numeroMoteur }}</div>
+                    <div class = 'text-warning text-center'><a href="{{ moteur.urlPV }}" target="_blank">PV</a> | <a href="{{ path('viewMotor', {'id' : moteur.id}) }}">CARNET</a></div>
                 </div>
             </div>
         {% endfor %}
