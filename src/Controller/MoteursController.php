@@ -269,6 +269,7 @@ class MoteursController extends AbstractController
     /**
      * @Route("view/moteur/{id}", name="viewMotor")
      */
+    // TODO commenter cette fonction
     public function viewMotor(Moteur $moteur, Request $request, $id)
     {
         if (null === $moteur)
@@ -280,7 +281,8 @@ class MoteursController extends AbstractController
             'moteur' => $moteur,
         ));
 
-
+    // TODO Créer un carnet d'entretien
+    // TODO implémenter le sous formulaire pour le carnet d'entretien moteur
 
     }
 }
