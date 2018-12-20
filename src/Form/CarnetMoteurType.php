@@ -11,6 +11,7 @@ namespace App\Form;
 
 use App\Entity\CarnetMoteur;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -29,7 +30,7 @@ class CarnetMoteurType extends AbstractType
                 'required' => false,
                 'empty_data' => 'opération de maintenance'
             ))
-            ->add('intervention', TextType::class, array(
+            ->add('intervention', TextareaType::class, array(
                 'required'=>false
             ))
             ->add('valider', SubmitType::class);

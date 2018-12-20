@@ -6,6 +6,8 @@ use App\Entity\CarnetMoteur;
 use App\Entity\Moteur;
 use App\Entity\TypeMateriel;
 use App\Form\CarnetMoteurType;
+use DateTime;
+use Doctrine\DBAL\Types\DateTimeType;
 use Endroid\QrCode\QrCode;
 use PhpParser\Node\Stmt\ElseIf_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -274,9 +276,10 @@ class MoteursController extends AbstractController
         }
 
         // on récupère le carnet du moteur
-        $carnet = $this -> getDoctrine() -> getRepository(CarnetMoteur::class) -> findBy(([
-            'moteur' => $moteur->getId()
-        ]));
+        $carnet = $this -> getDoctrine() -> getRepository(CarnetMoteur::class) -> findBy(
+            ['moteur' => $moteur->getId()],
+            ['date' => 'DESC']
+        );
 
         return $this->render('moteurs/viewMotor.html.twig', array(
             'moteur' => $moteur,
@@ -286,25 +289,35 @@ class MoteursController extends AbstractController
     }
 
     /**
-     * @Route("add/carnet/{id}, name="addEntreeCarnet")
+     * @Route("add/carnet/{motorId}", name="addEntreeCarnet")
      */
-    public function editCarnet(Request $request, $motorId)
+    public function addCarnet(Moteur $motorId, Request $request)
     {
         $entree = new CarnetMoteur();
         $entree -> setMoteur($motorId);
+        $dateNow = new DateTime();
+        $entree -> setDate($dateNow);
+
+        $moteur = $this -> getDoctrine() -> getRepository(Moteur::class) -> findOneBy(['id'=>$motorId]);
 
         $form = $this -> get('form.factory') -> create(CarnetMoteurType::class, $entree);
         $em = $this -> getDoctrine() -> getManager();
 
         if ($request->isMethod('POST') && $form -> handleRequest($request)->isValid())
         {
-            $entree -> setMoteur($moteur->getId());
-            $request -> addFlash('notice', 'opération ajoutée au carnet d\'entretien');
+            $entree -> setMoteur($moteur);
+            $this -> addFlash('notice', 'opération ajoutée au carnet d\'entretien');
             $em -> persist($entree);
             $em -> flush();
             return $this -> redirectToRoute('viewMotor', array('id' => $moteur->getId()));
         }
 
-        // TODO créer formulaire addCarnet et gérer l'affichage
+        return $this -> render('moteurs/addEntreeCarnet.html.twig', array(
+            'form' => $form -> createView(),
+            'moteur' => $moteur,
+            'entree' => $entree,
+        ));
     }
 }
+// TODO créer bouton add dans viewMotor
+// TODO créer lien dans viewMotor pour renvoyer sur page du carnet
