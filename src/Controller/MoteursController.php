@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\CarnetMoteur;
 use App\Entity\Moteur;
 use App\Entity\TypeMateriel;
+use App\Form\CarnetMoteurType;
 use Endroid\QrCode\QrCode;
 use PhpParser\Node\Stmt\ElseIf_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -162,11 +164,6 @@ class MoteursController extends AbstractController
             return $this->redirectToRoute('index');
         }
 
-        /*
-         * ///////////////////////////////////////////////////////
-         * il faut traiter le cas où $cat contient "all"
-         * ///////////////////////////////////////////////////////
-         */
         //si $cat ne contient pas "all", on cherche les moteurs ou sc de la catégorie $cat
         if (!preg_match('/[all]/', $cat))
         {
@@ -269,7 +266,6 @@ class MoteursController extends AbstractController
     /**
      * @Route("view/moteur/{id}", name="viewMotor")
      */
-    // TODO commenter cette fonction
     public function viewMotor(Moteur $moteur, Request $request, $id)
     {
         if (null === $moteur)
@@ -277,12 +273,38 @@ class MoteursController extends AbstractController
             throw new NotFoundHttpException("Ce moteur n'existe pas en base de donnée. Veuillez vérifier le numéro, ou régénérer la base de donnée.");
         }
 
+        // on récupère le carnet du moteur
+        $carnet = $this -> getDoctrine() -> getRepository(CarnetMoteur::class) -> findBy(([
+            'moteur' => $moteur->getId()
+        ]));
+
         return $this->render('moteurs/viewMotor.html.twig', array(
             'moteur' => $moteur,
+            'carnet' => $carnet,
         ));
 
-    // TODO Créer un carnet d'entretien
-    // TODO implémenter le sous formulaire pour le carnet d'entretien moteur
+    }
 
+    /**
+     * @Route("add/carnet/{id}, name="addEntreeCarnet")
+     */
+    public function editCarnet(Request $request, $motorId)
+    {
+        $entree = new CarnetMoteur();
+        $entree -> setMoteur($motorId);
+
+        $form = $this -> get('form.factory') -> create(CarnetMoteurType::class, $entree);
+        $em = $this -> getDoctrine() -> getManager();
+
+        if ($request->isMethod('POST') && $form -> handleRequest($request)->isValid())
+        {
+            $entree -> setMoteur($moteur->getId());
+            $request -> addFlash('notice', 'opération ajoutée au carnet d\'entretien');
+            $em -> persist($entree);
+            $em -> flush();
+            return $this -> redirectToRoute('viewMotor', array('id' => $moteur->getId()));
+        }
+
+        // TODO créer formulaire addCarnet et gérer l'affichage
     }
 }
