@@ -70,7 +70,7 @@ class MoteursController extends AbstractController
         //On boucle sur les valeurs des objets files
         foreach ($types as $type)
         {
-            if (!empty($type)) //TODO vérifier ce IF -> il manque l'accolade !!!
+            //if (!empty($type)) //TODO vérifier ce IF -> il manque l'accolade !!!
 
             //On détermine une variable "rep" pour écrire plus tard l'image dans le bon répertoire
             switch ($type)
@@ -104,7 +104,7 @@ class MoteursController extends AbstractController
                     $typeMat = array('sc', '1000kg');
                     break;
             }
-            {
+
                 foreach ($type as $element) //on boucle sur chaque ficher dans la catégorie
                 {
                     $nom_fichier = $element -> getFilename();
@@ -117,7 +117,7 @@ class MoteursController extends AbstractController
                     //et on écrit le fichier
                     $qrCode->writeFile('images/qrcodes/'.$rep.'/' . $nom_fichier_sans_extension . '.png');
 
-                    //on récupère l'objet typeMateirle pour la requete dans l'objet moteur
+                    //on récupère l'objet typeMateriel pour la requete dans l'objet moteur
                     $typeMateriel = $this -> getDoctrine() -> getRepository(TypeMateriel::class) -> findOneBy([
                         'type' => $typeMat[0],
                     ]);
@@ -130,12 +130,12 @@ class MoteursController extends AbstractController
                     if(!$moteur) //s'il n'est pas dans la base on le crée
                     {
                         $moteur = new Moteur();
+                        $moteur -> setTypeMoteur($typeMat[1]);
+                        $moteur -> setType($typeMateriel);
+                        $moteur -> setEnService(true);
+                        $moteur -> setNumeroMoteur($nom_fichier_sans_extension);
                     }
 
-                    $moteur -> setTypeMoteur($typeMat[1]);
-                    $moteur -> setType($typeMateriel);
-                    $moteur -> setEnService(true);
-                    $moteur -> setNumeroMoteur($nom_fichier_sans_extension);
                     $moteur -> setUrlQRCode('/images/qrcodes/'.$rep.'/'.$nom_fichier_sans_extension.'.png');
                     $moteur -> setUrlPV('/certificats/'.$rep.'/'.$nom_fichier);
 
@@ -144,7 +144,7 @@ class MoteursController extends AbstractController
 
                 }
             }
-        }
+
 
         $this -> addFlash('notice', 'QRCodes des moteurs générés');
         return $this -> redirectToRoute('gestion');
@@ -324,23 +324,55 @@ class MoteursController extends AbstractController
      */
     public function viewEntreeCarnet(CarnetMoteur $carnet, $id)
     {
-
         $moteur = $carnet -> getMoteur();
-
-        //$ligne = $this -> getDoctrine() -> getRepository(CarnetMoteur::class)-> findBy([
-        //    'moteur'=>$id,
-        //]);
-
-
 
         return $this -> render('moteurs/viewEntreeCarnet.html.twig', array(
             'entree' => $carnet,
             'moteur' => $moteur,
         ));
     }
+
+    /**
+     *@Route("edit/carnet/{id}", name="editEntreeCarnet")
+     */
+    public function editEntreeCarnet(CarnetMoteur $entree, $id, Request $request)
+    {
+        $moteur = $entree -> getMoteur();
+
+        $form = $this -> get('form.factory') -> create(CarnetMoteurType::class, $entree);
+        $em = $this -> getDoctrine() -> getManager();
+
+        if ($request->isMethod('POST') && $form -> handleRequest($request)->isValid())
+        {
+            $this -> addFlash('notice', 'Mise à jour effectuée');
+            $em -> persist($entree);
+            $em -> flush();
+            return $this -> redirectToRoute('viewMotor', array('id' => $moteur->getId()));
+        }
+
+        return $this -> render('moteurs/addEntreeCarnet.html.twig', array(
+            'form' => $form -> createView(),
+            'moteur' => $moteur,
+            'entree' => $entree,
+        ));
+    }
+
+    /**
+     * @Route("delete/carnet/{id}", name="deleteEntreeCarnet")
+     */
+    public function deleteEntreeCarnet(CarnetMoteur $entree, $id)
+    {
+        $moteur = $this -> getDoctrine() -> getRepository(Moteur::class) -> find($entree->getMoteur());
+        $em = $this -> getDoctrine() -> getManager();
+        $em -> remove($entree);
+        $em -> flush();
+
+        return $this->redirectToRoute('viewMotor', array(
+            'id' => $moteur -> getId(),
+        ));
+    }
 }
 //TODO Faire page d'accueil
-//TODO bouton d'édition d'une entrée carnet moteur
-//TODO bouton de suppression d'une entrée carnet moteur
 //TODO revoir le processus de création de la base moteur pour traiter le cas où le moteur existe déjà en bdd
+//TODO implémenter les Users et gérer leur injection en bdd carnet
 
