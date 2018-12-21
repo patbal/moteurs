@@ -70,7 +70,7 @@ class MoteursController extends AbstractController
         //On boucle sur les valeurs des objets files
         foreach ($types as $type)
         {
-            if (!empty($type))
+            if (!empty($type)) //TODO vérifier ce IF -> il manque l'accolade !!!
 
             //On détermine une variable "rep" pour écrire plus tard l'image dans le bon répertoire
             switch ($type)
@@ -289,7 +289,7 @@ class MoteursController extends AbstractController
     }
 
     /**
-     * @Route("add/carnet/{motorId}", name="addEntreeCarnet")
+     * @Route("add/carnet/{id}", name="addEntreeCarnet")
      */
     public function addCarnet(Moteur $motorId, Request $request)
     {
@@ -318,6 +318,29 @@ class MoteursController extends AbstractController
             'entree' => $entree,
         ));
     }
+
+    /**
+     *@Route("view/carnet/{id}", name="viewEntreeCarnet")
+     */
+    public function viewEntreeCarnet(CarnetMoteur $carnet, $id)
+    {
+
+        $moteur = $carnet -> getMoteur();
+
+        //$ligne = $this -> getDoctrine() -> getRepository(CarnetMoteur::class)-> findBy([
+        //    'moteur'=>$id,
+        //]);
+
+
+
+        return $this -> render('moteurs/viewEntreeCarnet.html.twig', array(
+            'entree' => $carnet,
+            'moteur' => $moteur,
+        ));
+    }
 }
-// TODO créer bouton add dans viewMotor
-// TODO créer lien dans viewMotor pour renvoyer sur page du carnet
+//TODO Faire page d'accueil
+//TODO bouton d'édition d'une entrée carnet moteur
+//TODO bouton de suppression d'une entrée carnet moteur
+//TODO revoir le processus de création de la base moteur pour traiter le cas où le moteur existe déjà en bdd
+

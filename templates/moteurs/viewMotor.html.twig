@@ -26,7 +26,7 @@
             </div>
             <div class="col-9">
                 <div class="border border-dark bg-white">
-                    <div class="card-header text-center text-success">Carnet d'entretien du moteur</div>
+                    <div class="card-header text-center text-success">Carnet d'entretien du moteur    <a href="{{ path('addEntreeCarnet', {'id' : moteur.id}) }}"><i class="far fa-plus-square"></i></a>
                     <div class="card-body text-dark">
                         {% if carnet %}
                             <table class="table table-hover table-sm card-text">
@@ -40,7 +40,8 @@
                                     {% for ligne in carnet %}
                                         <tr>
                                             <td width="20%">{{ ligne.date|date('d/m/Y') }}</td>
-                                            <td>{{ ligne.titre }}</td>
+                                            <td>
+                                                <a href="{{ path('viewEntreeCarnet', {id: ligne.id}) }}">{{ ligne.titre }}</a></td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
