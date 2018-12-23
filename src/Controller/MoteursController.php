@@ -10,6 +10,7 @@ use DateTime;
 use Doctrine\DBAL\Types\DateTimeType;
 use Endroid\QrCode\QrCode;
 use PhpParser\Node\Stmt\ElseIf_;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Tests\Compiler\F;
 use Symfony\Component\Finder\Finder;
@@ -22,6 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class MoteursController extends AbstractController
 {
     /**
+     * @IsGranted("ROLE_USER")
      * @Route("/", name="index")
      */
     public function index()
@@ -33,6 +35,7 @@ class MoteursController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_ADMIN")
      * @Route("/gestion", name="gestion")
      */
     public function gestion()
@@ -43,6 +46,7 @@ class MoteursController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_SUPER_ADMIN")
      * @Route("/genqr", name="genQRCodes")
      */
     public function gen_qr_code()
@@ -151,6 +155,7 @@ class MoteursController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_USER")
      * @Route("/view/qrCodes/{cat}", name="viewQrCodes")
      */
     public function viewQrCodes(string $cat)
@@ -209,6 +214,7 @@ class MoteursController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_ADMIN")
      * @Route("/print/qrCodes/{cat}", name="printQrCodes")
      */
     public function printQrCodes(string $cat)
@@ -265,6 +271,7 @@ class MoteursController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_USER")
      * @Route("view/moteur/{id}", name="viewMotor")
      */
     public function viewMotor(Moteur $moteur, Request $request, $id)
@@ -288,6 +295,7 @@ class MoteursController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_ADMIN")
      * @Route("add/carnet/{id}", name="addEntreeCarnet")
      */
     public function addCarnet(Moteur $motorId, Request $request)
@@ -319,6 +327,7 @@ class MoteursController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_USER")
      *@Route("view/carnet/{id}", name="viewEntreeCarnet")
      */
     public function viewEntreeCarnet(CarnetMoteur $carnet, $id)
@@ -332,6 +341,7 @@ class MoteursController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_ADMIN")
      *@Route("edit/carnet/{id}", name="editEntreeCarnet")
      */
     public function editEntreeCarnet(CarnetMoteur $entree, $id, Request $request)
@@ -357,6 +367,7 @@ class MoteursController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_SUPER_ADMIN")
      * @Route("delete/carnet/{id}", name="deleteEntreeCarnet")
      */
     public function deleteEntreeCarnet(CarnetMoteur $entree, $id)
@@ -370,7 +381,16 @@ class MoteursController extends AbstractController
             'id' => $moteur -> getId(),
         ));
     }
+
+    /**
+     * @Route("/logout", name="app_logout")
+     */
+    public function logout()
+    {
+        // controller can be blank: it will never be executed!
+        throw new \Exception('Don\'t forget to activate logout in security.yaml');
+    }
 }
 //TODO Faire page d'accueil
-//TODO implémenter les Users et gérer leur injection en bdd carnet
+//TODO Gérer les Users au niveau des entrées carnet
 
