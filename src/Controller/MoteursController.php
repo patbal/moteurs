@@ -70,8 +70,6 @@ class MoteursController extends AbstractController
         //On boucle sur les valeurs des objets files
         foreach ($types as $type)
         {
-            //if (!empty($type)) //TODO vérifier ce IF -> il manque l'accolade !!!
-
             //On détermine une variable "rep" pour écrire plus tard l'image dans le bon répertoire
             switch ($type)
             {
@@ -136,6 +134,7 @@ class MoteursController extends AbstractController
                         $moteur -> setNumeroMoteur($nom_fichier_sans_extension);
                     }
 
+                    // s'il y était on ne change que l'URL de son PV et celui du QRCode associé
                     $moteur -> setUrlQRCode('/images/qrcodes/'.$rep.'/'.$nom_fichier_sans_extension.'.png');
                     $moteur -> setUrlPV('/certificats/'.$rep.'/'.$nom_fichier);
 
@@ -373,6 +372,5 @@ class MoteursController extends AbstractController
     }
 }
 //TODO Faire page d'accueil
-//TODO revoir le processus de création de la base moteur pour traiter le cas où le moteur existe déjà en bdd
 //TODO implémenter les Users et gérer leur injection en bdd carnet
 
