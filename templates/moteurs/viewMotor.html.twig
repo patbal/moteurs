@@ -34,6 +34,7 @@
                                     <tr>
                                         <th width="20%">Date de l'entrée</th>
                                         <th>Titre</th>
+                                        <th width="10%">Par</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -41,7 +42,9 @@
                                         <tr>
                                             <td width="20%">{{ ligne.date|date('d/m/Y') }}</td>
                                             <td>
-                                                <a href="{{ path('viewEntreeCarnet', {id: ligne.id}) }}">{{ ligne.titre }}</a></td>
+                                                <a href="{{ path('viewEntreeCarnet', {id: ligne.id}) }}">{{ ligne.titre }}</a>
+                                            </td>
+                                            <td width="5%">{{ ligne.user.prenom|capitalize|first }}{{ ligne.user.nom|capitalize|first }}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>

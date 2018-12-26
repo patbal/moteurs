@@ -21,12 +21,7 @@ class CarnetMoteur
      */
     private $date;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $byUser;
-
-    /**
+     /**
      * @ORM\Column(type="string", length=255)
      */
     private $titre;
@@ -41,6 +36,11 @@ class CarnetMoteur
      */
     private $moteur;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     */
+    private $user;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -54,18 +54,6 @@ class CarnetMoteur
     public function setDate(\DateTimeInterface $date): self
     {
         $this->date = $date;
-
-        return $this;
-    }
-
-    public function getByUser(): ?int
-    {
-        return $this->byUser;
-    }
-
-    public function setByUser(int $byUser): self
-    {
-        $this->byUser = $byUser;
 
         return $this;
     }
@@ -102,6 +90,18 @@ class CarnetMoteur
     public function setMoteur(?Moteur $moteur): self
     {
         $this->moteur = $moteur;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }

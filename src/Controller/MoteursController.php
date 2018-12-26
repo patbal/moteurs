@@ -295,7 +295,7 @@ class MoteursController extends AbstractController
     }
 
     /**
-     * @IsGranted("ROLE_ADMIN")
+     * @IsGranted("ROLE_USER")
      * @Route("add/carnet/{id}", name="addEntreeCarnet")
      */
     public function addCarnet(Moteur $motorId, Request $request)
@@ -312,6 +312,8 @@ class MoteursController extends AbstractController
 
         if ($request->isMethod('POST') && $form -> handleRequest($request)->isValid())
         {
+            $user = $this->getUser();
+            $entree -> setUser($user);
             $entree -> setMoteur($moteur);
             $this -> addFlash('notice', 'opération ajoutée au carnet d\'entretien');
             $em -> persist($entree);
@@ -392,5 +394,4 @@ class MoteursController extends AbstractController
     }
 }
 //TODO Faire page d'accueil
-//TODO Gérer les Users au niveau des entrées carnet
 

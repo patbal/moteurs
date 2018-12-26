@@ -26,6 +26,7 @@
             </div>
             <div class="col-9">
                 <div class="border border-dark bg-white p-4">
+                    <p><span class="font-weight-bold">Intervenant : </span>{{ entree.user.prenom|capitalize }} {{ entree.user.nom|capitalize }}</p>
                     <p><span class="font-weight-bold">Date de l'entrée : </span>{{ entree.date|date('d/m/Y') }}</p>
                     <p><span class="font-weight-bold">Titre de l'intervention : </span>{{ entree.titre }}</p>
                     <p class="font-weight-bold">Intervention réalisée :</p><p>{{ entree.intervention }}</p>
@@ -35,14 +36,16 @@
                         <i class="fa fa-angle-double-left align-middle" aria-hidden="true"></i>
                         <span class="align-middle">Retour au moteur</span>
                     </a>
-                    <a href="{{ path('index') }}" class="btn btn-sm btn-outline-secondary text-center">
-                        <i class="far fa-edit align-middle"></i>
-                        <span class="align-middle">Modifier l'entrée</span>
-                    </a>
-                    <a href="{{ path('deleteEntreeCarnet', {'id': entree.id}) }}" class="btn btn-sm btn-outline-danger text-center" onclick="return confirm('ATTENTION : Etes-vous cretain de vouloir supprimer cette entrée ?');">
-                        <i class="far fa-trash-alt"></i>
-                        <span class="align-middle">Supprimer l'entrée</span>
-                    </a>
+                    {% if is_granted('ROLE_SUPER_ADMIN') %}
+                        <a href="{{ path('index') }}" class="btn btn-sm btn-outline-secondary text-center">
+                            <i class="far fa-edit align-middle"></i>
+                            <span class="align-middle">Modifier l'entrée</span>
+                        </a>
+                        <a href="{{ path('deleteEntreeCarnet', {'id': entree.id}) }}" class="btn btn-sm btn-outline-danger text-center" onclick="return confirm('ATTENTION : Etes-vous cretain de vouloir supprimer cette entrée ?');">
+                            <i class="far fa-trash-alt"></i>
+                            <span class="align-middle">Supprimer l'entrée</span>
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>
