@@ -28,9 +28,15 @@ class MoteursController extends AbstractController
      */
     public function index()
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
         return $this->render('moteurs/index.html.twig', [
             'controller_name' => 'HomePage',
-            'titre' => 'Carnet Moteurs'
+            'titre' => 'Carnet Moteurs',
+            'user' => $user
         ]);
     }
 

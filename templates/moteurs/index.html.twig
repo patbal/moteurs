@@ -1,20 +1,26 @@
 {% extends 'layout.html.twig' %}
 
-{% block title %}Hello {{ controller_name }}!{% endblock %}
+{% block title %}MATCHpv{% endblock %}
 
 {% block header %}
     <div id="header" class="card text-center">
-        <h1>Carnet Moteur</h1>
+        <h1>Carnet Moteurs</h1>
     </div>
 {% endblock %}
 
 {% block moteurs_body %}
 
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <p><br></p>
+    <div class="container">
+    <h1>Bienvenue {{ user.prenom|capitalize }} ! </h1>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'src/Controller/MoteursController.php'|file_link(0) }}">src/Controller/MoteursController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'templates/moteurs/index.html.twig'|file_link(0) }}">templates/moteurs/index.html.twig</a></code></li>
-    </ul>
+        <div>Voici les droits qui vous ont été octroyés : </div>
+
+        <div><code>{% for role in user.roles %}{{ role }}<br>{% endfor %}</code></div>
+
+        <br>
+        <div>Sélectionnez votre application dans la barre de menu en haut de page</div>
+    </div>
+
+
 {% endblock %}
