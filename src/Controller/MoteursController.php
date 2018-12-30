@@ -7,18 +7,16 @@ use App\Entity\Moteur;
 use App\Entity\TypeMateriel;
 use App\Form\CarnetMoteurType;
 use DateTime;
-use Doctrine\DBAL\Types\DateTimeType;
 use Endroid\QrCode\QrCode;
-use PhpParser\Node\Stmt\ElseIf_;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Tests\Compiler\F;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-
-
 
 class MoteursController extends AbstractController
 {
@@ -163,10 +161,16 @@ class MoteursController extends AbstractController
     /**
      * @IsGranted("ROLE_USER")
      * @Route("/view/qrCodes/{cat}", name="viewQrCodes")
+     * @param string $cat
+     * @param SessionInterface $session
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function viewQrCodes(string $cat)
+    public function viewQrCodes(string $cat, SessionInterface $session)
     {
-        //liste des valeurs que peut prendre $at
+        // on store $cat dans la session afin de retrouver la route en cas de suppression
+        $session->set('categorie', $cat);
+
+        //liste des valeurs que peut prendre $cat
         $vals = array('m250', 'm500', 'm1000', 'm2000','mall', 'sc400', 'sc500', 'sc1000', 'scall');
 
         //si $cat n'st pas dans l'array, -> erreur
@@ -189,7 +193,9 @@ class MoteursController extends AbstractController
             );
             $moteurs = $this -> getDoctrine() -> getRepository(Moteur::class) -> findBy([
                 'type' => $typeEl,
-                'typeMoteur' => $charge,
+                'typeMoteur' => $charge],
+                ['typeMoteur' => 'ASC',
+                 'numeroMoteur' => 'ASC'
             ]);
         }
 
@@ -203,7 +209,9 @@ class MoteursController extends AbstractController
                 ]
             );
             $moteurs = $this -> getDoctrine() -> getRepository(Moteur::class) -> findBy([
-                'type' => $typeEl,
+                'type' => $typeEl],
+                ['typeMoteur' => 'ASC',
+                'numeroMoteur' => 'ASC'
             ]);
             $charge = '';
         }
@@ -399,6 +407,33 @@ class MoteursController extends AbstractController
     {
         // controller can be blank: it will never be executed!
         throw new \Exception('Don\'t forget to activate logout in security.yaml');
+    }
+
+    /**
+     * @IsGranted("ROLE_SUPER_ADMIN")
+     * @Route("delete/moteur/{id}", name="deleteMoteur")
+     */
+    public function deleteMoteur(Moteur $moteur, $id, SessionInterface $session)
+    {
+        if (null === $moteur)
+        {
+            throw new NotFoundHttpException("Ce moteur n'existe pas en base de donnée. Veuillez vérifier le numéro, ou régénérer la base de donnée.");
+        }
+
+        $em = $this -> getDoctrine() -> getManager();
+        $em -> remove($moteur);
+        $em -> flush();
+
+        $session = new Session();
+        $this -> addFlash('notice', 'Le moteur '.$moteur->getNumeroMoteur().' a été supprimé de la base de données');
+
+        return $this -> redirectToRoute('viewQrCodes', array(
+            'cat' => ($session -> get('categorie')),
+            ));
+
+        /*return $this -> render('moteurs/viewDeleteTest.html.twig', array(
+            'sess' => $session -> get('categorie')
+        ));*/
     }
 }
 

@@ -22,6 +22,9 @@
                         <p class="card-text">n°série : {{ moteur.numeroMoteur }}</p>
                         <p class="card-text"><a href="{{ moteur.urlPV }}" class="text-secondary" target="_blank">Affichage du PV</a>
                     </div>
+                    {% if is_granted('ROLE_SUPER_ADMIN') %}
+                        <div class="card-footer"><a href="{{ path('deleteMoteur', {'id' : moteur.id }) }}" class="badge badge-danger" onclick="return confirm('ATTENTION : vous allez supprimer un levage. Êtes-vous certain ? Cette action ne peut être annulée');">supprimer ce moteur</a></div>
+                    {% endif %}
                 </div>
             </div>
             <div class="col-9">
