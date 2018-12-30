@@ -246,7 +246,8 @@ class MoteursController extends AbstractController
             );
             $moteurs = $this -> getDoctrine() -> getRepository(Moteur::class) -> findBy([
                 'type' => $typeEl,
-                'typeMoteur' => $charge,
+                'typeMoteur' => $charge],[
+                'numeroMoteur' => 'ASC',
             ]);
         }
 
@@ -260,7 +261,8 @@ class MoteursController extends AbstractController
                 ]
             );
             $moteurs = $this -> getDoctrine() -> getRepository(Moteur::class) -> findBy([
-                'type' => $typeEl,
+                'type' => $typeEl],[
+                'numeroMoteur' => 'ASC',
             ]);
             $charge = '';
         }
@@ -399,5 +401,4 @@ class MoteursController extends AbstractController
         throw new \Exception('Don\'t forget to activate logout in security.yaml');
     }
 }
-//TODO Faire page d'accueil
 

@@ -11,10 +11,9 @@
 
     {% block stylesheets %}
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.0/css/bootstrap-datepicker.css">
 
-        {# 'app' must match the first argument to addEntry() in webpack.config.js #}
-        {{ encore_entry_link_tags('app') }}
+        {# 'app' must match the first argument to addEntry() in webpack.config.js
+        {{ encore_entry_link_tags('app') }}#}
 
         <!-- Renders a link tag (if your module requires any CSS)
         <link rel="stylesheet" href="/build/app.css">-->
@@ -23,91 +22,51 @@
 </head>
 
 {% block header %}
-    <div id="header" class="card text-center">
-        <h1>Liste des certificats | <span class="badge badge-secondary">{{ moteurs|length }} {{ lev }}{% if moteurs|length > 1 %}s{% endif %} {{ charge }}</span></h1>
+    <div id="header" class=" text-center">
+        <h5>Liste des certificats | <span class="badge badge-secondary">{{ moteurs|length }} {{ lev }}{% if moteurs|length > 1 %}s{% endif %} {{ charge }}</span></h5>
+        <h6 class="success">utilisez la fonction "imprimer" de votre navigateur pour imprimer au format A4</h6>
     </div>
 {% endblock %}
 
 {% block moteurs_body %}
     <p></p>
+    {% set boucle = 6 %}
     <div class="row">
+
         {% for moteur in moteurs %}
-            <div class="col-2 card border-warning">
-                <div class="card-header text-center text-muted">{{ moteur.numeroMoteur }}</div>
-                <img class="card-img-top" src="../../{{ moteur.urlQRCode }}" alt="Mince, pas d'image...">
+
+            <div class="col-2">
+                <div class="card">
+                    <img class="card-img-top" src="../../{{ moteur.urlQRCode }}" alt="Mince, pas d'image...">
+                    <div class="card-body">
+                        <p class="card-text text-center">
+                            {{ moteur.numeroMoteur }}
+                        </p>
+                    </div>
+                </div>
             </div>
+
+            {% set boucle = (boucle - 1) %}
+
+            {% if boucle == 0 %}
+                </div>
+                <div class="row">
+                {% set boucle = 6 %}
+            {% endif %}
+
         {% endfor %}
     </div>
+
 {% endblock %}
 
 {% block javascripts %}
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    <script src="https://use.fontawesome.com/d5c3e51e97.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.0/js/bootstrap-datepicker.min.js"></script>
 
     {{ encore_entry_script_tags('app') }}
 
-    <!-- Renders app.js & a webpack runtime.js file
-        <script src="/build/runtime.js"></script>
-        <script src="/build/app.js"></script> -->
-
-    <!-- Initialize Bootstrap functionality -->
-    <script>
-        // Initialize tooltip component
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip()
-        })
-
-        // Initialize popover component
-        $(function () {
-            $('[data-toggle="popover"]').popover()
-        })
-    </script>
-
-    <script type="text/javascript">
-
-        function CloseWindow() {
-            var obj_window = window.open('', '_self');
-            obj_window.opener = window;
-            obj_window.focus();
-            opener=self;
-            self.close();
-        }
 
 
-    </script>
-
-    <script>
-        jQuery(document).ready(function() {
-            $('.js-datepicker').datepicker({
-                format: 'dd/mm/yyyy',
-                language: 'fr-FR',
-                weekStart: 1,
-                todayBtn: true,
-                todayHighlight: true
-            });
-        });
-    </script>
-
-    <script>
-        (function($){
-            $.fn.datepicker.dates['fr'] = {
-                days: ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"],
-                daysShort: ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."],
-                daysMin: ["d", "l", "ma", "me", "j", "v", "s"],
-                months: ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"],
-                monthsShort: ["janv.", "févr.", "mars", "avril", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."],
-                today: "Aujourd'hui",
-                monthsTitle: "Mois",
-                clear: "Effacer",
-                weekStart: 1,
-                format: "dd/mm/yyyy"
-            };
-        }(jQuery));
-    </script>
 
 {% endblock %}
 
