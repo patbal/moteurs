@@ -54,6 +54,8 @@
                                 <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'sc500'}) }}">500kg</a>
                                 <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'sc1000'}) }}">1000kg</a>
                                 <a class="dropdown-item" href="{{ path('viewQrCodes', {'cat': 'scall'}) }}">Tous</a>
+                                <h6 class="dropdown-header">--------------------</h6>
+                                <a class="dropdown-item" href="{{ path('viewDeactivated') }}">Levages désactivés</a>
                             </div>
                         </li>
                         {% if is_granted('ROLE_ADMIN') %}

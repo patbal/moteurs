@@ -193,7 +193,8 @@ class MoteursController extends AbstractController
             );
             $moteurs = $this -> getDoctrine() -> getRepository(Moteur::class) -> findBy([
                 'type' => $typeEl,
-                'typeMoteur' => $charge],
+                'typeMoteur' => $charge,
+                'enService' => true],
                 ['typeMoteur' => 'ASC',
                  'numeroMoteur' => 'ASC'
             ]);
@@ -209,7 +210,8 @@ class MoteursController extends AbstractController
                 ]
             );
             $moteurs = $this -> getDoctrine() -> getRepository(Moteur::class) -> findBy([
-                'type' => $typeEl],
+                'type' => $typeEl,
+                'enService' => true],
                 ['typeMoteur' => 'ASC',
                 'numeroMoteur' => 'ASC'
             ]);
@@ -412,6 +414,10 @@ class MoteursController extends AbstractController
     /**
      * @IsGranted("ROLE_SUPER_ADMIN")
      * @Route("delete/moteur/{id}", name="deleteMoteur")
+     * @param Moteur $moteur
+     * @param $id
+     * @param SessionInterface $session
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteMoteur(Moteur $moteur, $id, SessionInterface $session)
     {
@@ -430,10 +436,67 @@ class MoteursController extends AbstractController
         return $this -> redirectToRoute('viewQrCodes', array(
             'cat' => ($session -> get('categorie')),
             ));
+    }
 
-        /*return $this -> render('moteurs/viewDeleteTest.html.twig', array(
-            'sess' => $session -> get('categorie')
-        ));*/
+    /**
+     * IsGranted("ROLE_ADMIN")
+     * @Route("/deactivate/motor/{id}", name="deactivateMoteur")
+     */
+    public function deactivate(Moteur $moteur, $id)
+    {
+        if (null === $moteur)
+        {
+            throw new NotFoundHttpException("Ce moteur n'existe pas en base de donnée. Veuillez vérifier le numéro, ou régénérer la base de donnée.");
+        }
+
+        $em = $this -> getDoctrine() -> getManager();
+        $moteur -> setEnService(false);
+        $em -> persist($moteur);
+        $em -> flush();
+
+        $this -> addFlash('warning', 'Le moteur '.$moteur->getNumeroMoteur().' a été désactivé');
+
+        return $this -> redirectToRoute('viewMotor', array(
+            'id' => $id));
+    }
+
+    /**
+     * IsGranted("ROLE_ADMIN")
+     * @Route("/activate/motor/{id}", name="activateMoteur")
+     */
+    public function activate(Moteur $moteur, $id)
+    {
+        if (null === $moteur)
+        {
+            throw new NotFoundHttpException("Ce moteur n'existe pas en base de donnée. Veuillez vérifier le numéro, ou régénérer la base de donnée.");
+        }
+
+        $em = $this -> getDoctrine() -> getManager();
+        $moteur -> setEnService(true);
+        $em -> persist($moteur);
+        $em -> flush();
+
+        $this -> addFlash('notice', 'Le moteur '.$moteur->getNumeroMoteur().' a été activé');
+
+        return $this -> redirectToRoute('viewMotor', array(
+            'id' => $id));
+    }
+
+    /**
+     * IsGranted("ROLE_USER")
+     * @Route("/view/deactivated", name="viewDeactivated")
+     */
+    public function viewDeactivated()
+    {
+        $moteurs = $this -> getDoctrine() -> getRepository(Moteur::class) -> findBy(
+            ['enService' => false],
+            ['numeroMoteur' => 'ASC']
+        );
+
+        return $this -> render('moteurs/viewDeactivated.html.twig', array(
+            'moteurs' => $moteurs,
+        ));
+
     }
 }
 

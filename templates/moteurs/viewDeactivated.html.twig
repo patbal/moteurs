@@ -4,7 +4,8 @@
 
 {% block header %}
     <div id="header" class="card text-center">
-        <h1>Liste des certificats | <span class="badge badge-secondary">{{ moteurs|length }} {{ lev }}{% if moteurs|length > 1 %}s{% endif %} {{ charge }}</span></h1>
+        <h1>Liste des engins désactivés</h1>
+        <h4>(matériel cassé, vendu, etc.)</h4>
     </div>
 {% endblock %}
 
@@ -12,13 +13,15 @@
     <p></p>
     <div class="row">
         {% for moteur in moteurs %}
-            <div class="col-2 card border-warning {% if not moteur.enService %}text-white bg-warning{% endif %}">
+            <div class="col-2 card border-warning text-white bg-warning">
                 <div class="card-header text-center {% if moteur.enService %}text-muted{% endif %}">{{ moteur.numeroMoteur }}</div>
                 <img class="card-img-top" src="../../{{ moteur.urlQRCode }}" alt="Mince, pas d'image...">
                 <div class="card-footer">
                     <div class = 'text-warning text-center'><a href="{{ moteur.urlPV }}" target="_blank">PV</a> | <a href="{{ path('viewMotor', {'id' : moteur.id}) }}">CARNET</a></div>
                 </div>
             </div>
+        {% else %}
+            <div class="col-12 bg-success text-white text-center">Pas d'engins de levage désactivés</div>
         {% endfor %}
     </div>
 {% endblock %}

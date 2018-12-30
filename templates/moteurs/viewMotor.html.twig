@@ -15,19 +15,32 @@
             <div class="col-3">
                 <div class="card border-dark mb-3" style="max-width: 18rem;">
                     <img class="card-img-top" src="{{ moteur.urlQRCode }}" alt="QRCode moteur">
-                    <div class="card-header text-center text-success">QRCode actif</div>
+                    {% if moteur.enService %}
+                        <div class="card-header text-center text-success">QRCode actif</div>
+                    {% else %}
+                        <div class="card-header text-center text-warning">QRCode inactif</div>
+                    {% endif %}
                     <div class="card-body text-dark">
                         <h5 class="card-title">{{ moteur.type.nomComplet|capitalize }}</h5>
                         <p class="card-text">CMU : {{ moteur.typeMoteur }}</p>
                         <p class="card-text">n°série : {{ moteur.numeroMoteur }}</p>
                         <p class="card-text"><a href="{{ moteur.urlPV }}" class="text-secondary" target="_blank">Affichage du PV</a>
                     </div>
-                    {% if is_granted('ROLE_SUPER_ADMIN') %}
-                        <div class="card-footer"><a href="{{ path('deleteMoteur', {'id' : moteur.id }) }}" class="badge badge-danger" onclick="return confirm('ATTENTION : vous allez supprimer un levage. Êtes-vous certain ? Cette action ne peut être annulée');">supprimer ce moteur</a></div>
-                    {% endif %}
+                        <div class="card-footer">
+                            {% if is_granted('ROLE_ADMIN') %}
+                                {% if moteur.enService %}
+                                    <a href="{{ path('deactivateMoteur', {'id' : moteur.id }) }}" class="badge badge-warning">désactiver ce moteur</a>
+                                {% else %}
+                                    <a href="{{ path('activateMoteur', {'id' : moteur.id }) }}" class="badge badge-success">activer ce moteur</a>
+                                {% endif %}
+                            {% endif %}
+                            {% if is_granted('ROLE_SUPER_ADMIN') %}
+                                <br><a href="{{ path('deleteMoteur', {'id' : moteur.id }) }}" class="badge badge-danger" onclick="return confirm('ATTENTION : vous allez supprimer un levage. Êtes-vous certain ? Cette action ne peut être annulée');">supprimer ce moteur</a>
+                            {% endif %}
+                        </div>
                 </div>
             </div>
-            <div class="col-9">
+            <div class="col-9{% if not moteur.enService %} d-none{% endif %}">
                 <div class="border border-dark bg-white">
                     <div class="card-header text-center text-success">Carnet d'entretien du moteur    <a href="{{ path('addEntreeCarnet', {'id' : moteur.id}) }}"><i class="far fa-plus-square"></i></a>
                     <div class="card-body text-dark">
