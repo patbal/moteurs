@@ -1,7 +1,5 @@
 {% extends 'layout.html.twig' %}
 
-{% block title %}QrCodes{% endblock %}
-
 {% block header %}
     <div id="header" class="card text-center">
         <h1>Liste des certificats | <span class="badge badge-secondary">{{ moteurs|length }} {{ lev }}{% if moteurs|length > 1 %}s{% endif %} {{ charge }}</span></h1>
@@ -12,7 +10,7 @@
     <p></p>
     <div class="row">
         {% for moteur in moteurs %}
-            <div class="col-6 col-lg-2 card border-warning {% if not moteur.enService %}text-white bg-warning{% endif %}">
+            <div class="col-6 col-sm-4 col-lg-2 card border-warning {% if not moteur.enService %}text-white bg-warning{% endif %}">
                 <div class="card-header text-center {% if moteur.enService %}text-muted{% endif %}">{{ moteur.numeroMoteur }}</div>
                 <img class="card-img-top" src="{{ moteur.urlQRCode }}" alt="Mince, pas d'image...">
                 <div class="card-footer">
