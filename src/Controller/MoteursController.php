@@ -483,7 +483,7 @@ class MoteursController extends AbstractController
     }
 
     /**
-     * IsGranted("ROLE_USER")
+     * @IsGranted("ROLE_USER")
      * @Route("/view/deactivated", name="viewDeactivated")
      */
     public function viewDeactivated()

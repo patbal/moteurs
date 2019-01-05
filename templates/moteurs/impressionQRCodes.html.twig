@@ -22,7 +22,7 @@
 </head>
 
 {% block header %}
-    <div id="header" class=" text-center">
+    <div id="header newPage"" class="text-center">
         <h5>Liste des certificats | <span class="badge badge-secondary">{{ moteurs|length }} {{ lev }}{% if moteurs|length > 1 %}s{% endif %} {{ charge }}</span></h5>
         <h6 class="success">utilisez la fonction "imprimer" de votre navigateur pour imprimer au format A4</h6>
     </div>
@@ -31,10 +31,21 @@
 {% block moteurs_body %}
     <p></p>
     {% set boucle = 6 %}
-    <div class="row">
+
+    <div class="container float">
 
         {% for moteur in moteurs %}
+            {% if (loop.index % (6*6) == 0) and not loop.first %}<div class="float newPage"></div>{% endif %}
 
+            {% if loop.first %}
+                <div class="row">
+            {% endif %}
+
+            {% if boucle == 0 %}
+                </div>
+                <div class="row">
+                {% set boucle = 6 %}
+            {% endif %}
             <div class="col-2">
                 <div class="card">
                     <img class="card-img-top" src="../../{{ moteur.urlQRCode }}" alt="Mince, pas d'image...">
@@ -48,12 +59,10 @@
 
             {% set boucle = (boucle - 1) %}
 
-            {% if boucle == 0 %}
+            {% if loop.last %}
                 </div>
-                <div class="row">
-                {% set boucle = 6 %}
             {% endif %}
-
+                    {##}
         {% endfor %}
     </div>
 

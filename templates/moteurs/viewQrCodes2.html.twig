@@ -14,7 +14,7 @@
         {% for moteur in moteurs %}
             <div class="col-2 card border-warning {% if not moteur.enService %}text-white bg-warning{% endif %}">
                 <div class="card-header text-center {% if moteur.enService %}text-muted{% endif %}">{{ moteur.numeroMoteur }}</div>
-                <img class="card-img-top" src="../../{{ moteur.urlQRCode }}" alt="Mince, pas d'image...">
+                <img class="card-img-top" src="{{ moteur.urlQRCode }}" alt="Mince, pas d'image...">
                 <div class="card-footer">
                     <div class = 'text-warning text-center'><a href="{{ moteur.urlPV }}" target="_blank">PV</a> | <a href="{{ path('viewMotor', {'id' : moteur.id}) }}">CARNET</a></div>
                 </div>
