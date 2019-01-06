@@ -116,7 +116,6 @@ class MoteursController extends AbstractController
                     $nom_fichier = $element -> getFilename();
                     $nom_fichier_sans_extension = trim($nom_fichier, '.pdf');
                     $url = $element -> getRealPath();
-                    $testurl = "http://$_SERVER[HTTP_HOST]".$url;
 
                     if (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false)
                     {
@@ -129,7 +128,7 @@ class MoteursController extends AbstractController
 
                     //on crée le QRCode
                     $qrCode = new QrCode();
-                    $qrCode->setText($testurl);
+                    $qrCode->setText($urlPv);
                     $qrCode->setSize(200);
                     //et on écrit le fichier
                     $qrCode->writeFile('images/qrcodes/'.$rep.'/' . $nom_fichier_sans_extension . '.png');
