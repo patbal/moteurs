@@ -120,11 +120,11 @@ class MoteursController extends AbstractController
 
                     if (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false)
                     {
-                        $urlQRCode = '/images/qrcodes/'.$rep.'/'.$nom_fichier_sans_extension.'.png';
+                        $urlPv = '/certificats/'.$rep.'/'.$nom_fichier;
                     }
                     else
                     {
-                        $urlQRCode = 'http://'.$_SERVER['HTTP_HOST'].'/images/qrcodes/'.$rep.'/'.$nom_fichier_sans_extension.'.png';
+                        $urlPv = 'http://'.$_SERVER['HTTP_HOST'].'/certificats/'.$rep.'/'.$nom_fichier;
                     }
 
                     //on crée le QRCode
@@ -154,8 +154,9 @@ class MoteursController extends AbstractController
                     }
 
                     // s'il y était on ne change que l'URL de son PV et celui du QRCode associé
-                    $moteur -> setUrlQRCode($urlQRCode);
-                    $moteur -> setUrlPV('/certificats/'.$rep.'/'.$nom_fichier);
+                    $moteur -> setUrlQRCode('/images/qrcodes/'.$rep.'/'.$nom_fichier_sans_extension.'.png');
+                    //$moteur -> setUrlPV('/certificats/'.$rep.'/'.$nom_fichier);
+                    $moteur -> setUrlPV($urlPv);
 
                     $em -> persist($moteur);
                     $em -> flush();
