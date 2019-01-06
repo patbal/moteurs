@@ -118,7 +118,7 @@ class MoteursController extends AbstractController
                     $url = $element -> getRealPath();
                     $testurl = "http://$_SERVER[HTTP_HOST]".$url;
 
-                    if (strpos($_SERVER['HTTP_HOST'], 'LOCALHOST') !== false)
+                    if (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false)
                     {
                         $urlQRCode = '/images/qrcodes/'.$rep.'/'.$nom_fichier_sans_extension.'.png';
                     }
