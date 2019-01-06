@@ -116,9 +116,20 @@ class MoteursController extends AbstractController
                     $nom_fichier = $element -> getFilename();
                     $nom_fichier_sans_extension = trim($nom_fichier, '.pdf');
                     $url = $element -> getRealPath();
+                    $testurl = "http://$_SERVER[HTTP_HOST]".$url;
+
+                    if (strpos($_SERVER['HTTP_HOST'], 'LOCALHOST') !== false)
+                    {
+                        $urlQRCode = '/images/qrcodes/'.$rep.'/'.$nom_fichier_sans_extension.'.png';
+                    }
+                    else
+                    {
+                        $urlQRCode = 'http://'.$_SERVER['HTTP_HOST'].'/images/qrcodes/'.$rep.'/'.$nom_fichier_sans_extension.'.png';
+                    }
+
                     //on crée le QRCode
                     $qrCode = new QrCode();
-                    $qrCode->setText($url);
+                    $qrCode->setText($testurl);
                     $qrCode->setSize(200);
                     //et on écrit le fichier
                     $qrCode->writeFile('images/qrcodes/'.$rep.'/' . $nom_fichier_sans_extension . '.png');
@@ -143,7 +154,7 @@ class MoteursController extends AbstractController
                     }
 
                     // s'il y était on ne change que l'URL de son PV et celui du QRCode associé
-                    $moteur -> setUrlQRCode('/images/qrcodes/'.$rep.'/'.$nom_fichier_sans_extension.'.png');
+                    $moteur -> setUrlQRCode($urlQRCode);
                     $moteur -> setUrlPV('/certificats/'.$rep.'/'.$nom_fichier);
 
                     $em -> persist($moteur);
