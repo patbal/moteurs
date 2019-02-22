@@ -48,7 +48,7 @@
             {% endif %}
             <div class="col-2">
                 <div class="card">
-                    <img class="card-img-top" src="../../{{ moteur.urlQRCode }}" alt="Mince, pas d'image...">
+                    <img class="card-img-top" {# src="../../{{ moteur.urlQRCode }}" #} src="{{ moteur.urlQRCode }}" alt="Mince, pas d'image...">
                     <div class="card-body">
                         <p class="card-text text-center">
                             {{ moteur.numeroMoteur }}
