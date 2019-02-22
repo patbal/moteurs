@@ -117,6 +117,7 @@ class MoteursController extends AbstractController
                     $nom_fichier_sans_extension = trim($nom_fichier, '.pdf');
                     $url = $element -> getRealPath();
 
+                    //test pour savoir si on encode en local ou sur le serveur de déploiement
                     if (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false)
                     {
                         $urlPv = '/certificats/'.$rep.'/'.$nom_fichier;
