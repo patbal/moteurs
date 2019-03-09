@@ -26,17 +26,42 @@ class MoteursController extends AbstractController
      * @IsGranted("ROLE_USER")
      * @Route("/", name="index")
      */
-    public function index()
+    public function index(SessionInterface $session)
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
+        if($session -> has('menuItemsGenerated'))
+        {
+            $menuItems = $session->get('menuItems');
+        }
+        Else{
+            $tousAppareils = $this -> getDoctrine() -> getRepository(Moteur::class) -> findAll();
+            $coupleRef = array();
+
+            foreach ($tousAppareils as $appareil){
+                $typeMateriel = $appareil -> getType() -> getNomComplet();
+                $serie = $appareil -> getTypeMoteur();
+                $couple = array($serie, $typeMateriel);
+
+                if ($couple !== $coupleRef){
+                    $menuItems[]=[$serie => $typeMateriel];
+                    $coupleRef = $couple;
+                }
+            }
+            $session -> set('menuItemsGenerated', true);
+            $session -> set('menuItems', $menuItems);
+        }
+
+
+
         return $this->render('moteurs/index.html.twig', [
             'controller_name' => 'HomePage',
             'titre' => 'Carnet Moteurs',
-            'user' => $user
+            'user' => $user,
+            'menuItems' => $menuItems,
         ]);
     }
 
