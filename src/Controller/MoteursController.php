@@ -44,65 +44,12 @@ class MoteursController extends AbstractController
      * @IsGranted("ROLE_ADMIN")
      * @Route("/gestion", name="gestion")
      */
-    public function gestion()
-    {
-        //on scanne le répertoire de dépose pour connaître tous les répertoires présents
-        $repertoires = new finder();
-        $repertoires -> directories() -> in('certificats')->sortByName(true);
-            //$repertoires ->files()->name('*.pdf') -> in('certificats/m250/');
-        //directories() -> in('certificats/');
-
-        foreach ($repertoires as $rep){
-            $files = new Finder();
-            $files -> files() -> name('*.pdf') -> in("$rep") -> sortByName(true); //on liste les fichiers du répertoire
-
-            //s'il y a des fichiers dans le répertoire, on injecte leur objet dans un tableau
-            if(count($files)>0){
-                foreach ($files as $file){
-                    ${$rep}[] = $file;                            //le tableau prend le nom du répertoire scanné, et chaque objet est stocké dans le tableau
-                }
-                $nomRepertoire = $rep->getFilename();           //on récupère le nom de la clef du tableau
-                $arborescence["$nomRepertoire"] = $$rep;        //et on injecte les objets Finder fichier du répertoire dans le tableau
-            }
-
-            else{
-                $nomRep = $rep -> getFilename();
-                $this -> addFlash('alert', 'le répertoire "'.$nomRep.'" ne contient pas de fichier');
-            }
-        }
-
-        $listeDir = array_keys($arborescence);
-        $nbDir = count($listeDir);
-
-        $fileSystem = new Filesystem();
-        foreach ($listeDir as $dir){
-            $fileSystem -> mkdir("images/test/$dir");
-        }
-
-        foreach ($arborescence as $dir => $files){
-
-            foreach ($files as $file){
-                //on crée le QRCode
-                $qrCode = new QrCode();
-                $qrCode->setText($file -> getFilename());
-                $qrCode->setSize(200);
-                //et on écrit le fichier
-                $qrCode->writeFile("images/test/$dir/".($file -> getFilename()).'.png');
-            }
-
-
-
-        }
-
+    public function gestion() {
 
         return $this->render('moteurs/gestionQRCodes.html.twig', [
             'controller_name' => 'MoteursController',
-            'names'=>$arborescence,
-            'listeDir' => $listeDir,
-            'nbDir' => $nbDir,
         ]);
     }
-    //TODO : enlever le code test ci-dessus et dans le twig correspondant
 
     /**
      * @IsGranted("ROLE_SUPER_ADMIN")
@@ -110,11 +57,11 @@ class MoteursController extends AbstractController
      */
     public function gen_qr_code()
     {
+        $em = $this -> getDoctrine() -> getManager();
+
         //on scanne le répertoire de dépose pour connaître tous les répertoires présents
         $repertoires = new finder();
         $repertoires -> directories() -> in('certificats')->sortByName(true);
-        //$repertoires ->files()->name('*.pdf') -> in('certificats/m250/');
-        //directories() -> in('certificats/');
 
         foreach ($repertoires as $rep){
             $files = new Finder();
@@ -143,20 +90,62 @@ class MoteursController extends AbstractController
         }
 
         foreach ($arborescence as $dir => $files){                  //Dans chaque répertoire source,
+            $typeMat = array();
+            $typeMat = explode('-', $dir);
+
+            //on récupère l'objet typeMateriel pour la requête dans l'objet moteur
+            $typeMateriel = $this -> getDoctrine() -> getRepository(TypeMateriel::class) -> findOneBy([
+                'type' => $typeMat[0],
+            ]);
+
             foreach ($files as $file){                              //Pour chaque fichier
+                $nomFichierSansExtension = trim(($file -> getFilename()), '.pdf');
+
                 $qrCode = new QrCode();                             //on crée le QRCode
-                $qrCode->setText($file -> getFilename());           //TODO mettre l'URL à la place du nom
+                //test pour savoir si on encode en local ou sur le serveur de déploiement
+                if (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false)
+                {
+                    $urlPv = "/certificats/$dir/".($file -> getFilename());
+                }
+                else
+                {
+                    $urlPv = 'http://'.$_SERVER['HTTP_HOST']."/certificats/$dir/".($file -> getFilename());
+                }
+                $qrCode->setText($urlPv);
                 $qrCode->setSize(200);
-                $qrCode->writeFile("images/test/$dir/".($file -> getFilename()).'.png');    //et on écrit le fichier
+                $qrCode->writeFile("images/test/$dir/".$nomFichierSansExtension.'.png');    //et on écrit le fichier
+
+                //on récupère le moteur dans la base s'il y est
+                $moteur = $this -> getDoctrine() -> getRepository(Moteur::class) -> findOneBy([
+                    'numeroMoteur' => $nomFichierSansExtension,
+                ]);
+
+                if(!$moteur) //s'il n'est pas dans la base on le crée
+                {
+                    $moteur = new Moteur();
+                    $moteur -> setTypeMoteur($typeMat[1]);
+                    $moteur -> setEnService(true);
+                    $moteur -> setNumeroMoteur($nomFichierSansExtension);
+                    $moteur -> setType($typeMateriel);
+                }
+
+                // s'il y était on ne change que l'URL de son PV et celui du QRCode associé
+                $moteur -> setUrlQRCode('/images/qrcodes/'.$dir.'/'.$nomFichierSansExtension.'.png');
+                $moteur -> setUrlPV($urlPv);
+                //$moteur -> setUrlPV($type.' + '.$charge);
+
+                $em -> persist($moteur);
+                $em -> flush();
+
+
             }
         }
 
 
 
 
-
         //TODO : continuer le code, la partie ci-après de la fonction est ancienne
-
+/*
         $mot250 = new Finder();
         $mot500 = new Finder();
         $mot1000 = new Finder();
@@ -263,7 +252,7 @@ class MoteursController extends AbstractController
                     $em -> flush();
 
                 }
-            }
+            }*/
 
 
         $this -> addFlash('notice', 'QRCodes des moteurs générés');
