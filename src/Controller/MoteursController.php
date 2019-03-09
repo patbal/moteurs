@@ -12,6 +12,7 @@ use phpDocumentor\Reflection\Types\Array_;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Tests\Compiler\F;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -51,36 +52,54 @@ class MoteursController extends AbstractController
             //$repertoires ->files()->name('*.pdf') -> in('certificats/m250/');
         //directories() -> in('certificats/');
 
+        foreach ($repertoires as $rep){
+            $files = new Finder();
+            $files -> files() -> name('*.pdf') -> in("$rep") -> sortByName(true); //on liste les fichiers du répertoire
 
-
-        //$name = array();
-
-        foreach ($repertoires as $re){
-
-                $files = new Finder();
-                $rep=$re->getFilename();
-                $files -> files() -> name('*.pdf') -> in("$re") -> sortByName(true);
-                if(count($files)>0){
-                    $nomRep='bla';
-                    foreach ($files as $file){
-                        $$re[] = $file ;
+            //s'il y a des fichiers dans le répertoire, on injecte leur objet dans un tableau
+            if(count($files)>0){
+                foreach ($files as $file){
+                    ${$rep}[] = $file;                            //le tableau prend le nom du répertoire scanné, et chaque objet est stocké dans le tableau
                 }
-                        $name = $re->getFilename();
-                        $names["$name"] = $$re;
+                $nomRepertoire = $rep->getFilename();           //on récupère le nom de la clef du tableau
+                $arborescence["$nomRepertoire"] = $$rep;        //et on injecte les objets Finder fichier du répertoire dans le tableau
+            }
 
-                }
-                else{
-                    $nomRep = $re -> getFilename();
-                    $this -> addFlash('warning', 'le répertoire "'.$nomRep.'" ne contient pas de fichier');
-                }
+            else{
+                $nomRep = $rep -> getFilename();
+                $this -> addFlash('alert', 'le répertoire "'.$nomRep.'" ne contient pas de fichier');
+            }
+        }
+
+        $listeDir = array_keys($arborescence);
+        $nbDir = count($listeDir);
+
+        $fileSystem = new Filesystem();
+        foreach ($listeDir as $dir){
+            $fileSystem -> mkdir("images/test/$dir");
+        }
+
+        foreach ($arborescence as $dir => $files){
+
+            foreach ($files as $file){
+                //on crée le QRCode
+                $qrCode = new QrCode();
+                $qrCode->setText($file -> getFilename());
+                $qrCode->setSize(200);
+                //et on écrit le fichier
+                $qrCode->writeFile("images/test/$dir/".($file -> getFilename()).'.png');
+            }
+
+
 
         }
 
+
         return $this->render('moteurs/gestionQRCodes.html.twig', [
             'controller_name' => 'MoteursController',
-            'repertoires' => $repertoires,
-            'names'=>$names,
-            'nomRep'=>$nomRep,
+            'names'=>$arborescence,
+            'listeDir' => $listeDir,
+            'nbDir' => $nbDir,
         ]);
     }
     //TODO : enlever le code test ci-dessus et dans le twig correspondant
@@ -91,13 +110,12 @@ class MoteursController extends AbstractController
      */
     public function gen_qr_code()
     {
-        //on utilise Finder pour lire le répertoire des PDF
-
-        //on scanne le répertoire de dépose pour connaître tous les répertoires présents, classés par ordre alphabétique
+        //on scanne le répertoire de dépose pour connaître tous les répertoires présents
         $repertoires = new finder();
-        $repertoires ->directories() -> in('certificats') -> sortByName(true);
+        $repertoires -> directories() -> in('certificats')->sortByName(true);
+        //$repertoires ->files()->name('*.pdf') -> in('certificats/m250/');
+        //directories() -> in('certificats/');
 
-        //
         foreach ($repertoires as $rep){
             $files = new Finder();
             $files -> files() -> name('*.pdf') -> in("$rep") -> sortByName(true); //on liste les fichiers du répertoire
@@ -105,19 +123,38 @@ class MoteursController extends AbstractController
             //s'il y a des fichiers dans le répertoire, on injecte leur objet dans un tableau
             if(count($files)>0){
                 foreach ($files as $file){
-                    $$re[] = $file;                         //le tableau prend le nom du répertoire scanné, et chaque objet est stocké dans le tableau
+                    ${$rep}[] = $file;                            //le tableau prend le nom du répertoire scanné, et chaque objet est stocké dans le tableau
                 }
-                $name = $rep->getFilename();                //on récupère le nom de la clef du tableau
-                $names["$name"] = $$re;                     //et on injecte les objets Finder fichier du répertoire dans le tableau
+                $nomRepertoire = $rep->getFilename();           //on récupère le nom de la clef du tableau
+                $arborescence["$nomRepertoire"] = $$rep;        //et on injecte les objets Finder fichier du répertoire dans le tableau
             }
 
             else{
-                $nomRep = $re -> getFilename();
-                $this -> addFlash('warning', 'le répertoire "'.$nomRep.'" ne contient pas de fichier');
+                $nomRep = $rep -> getFilename();
+                $this -> addFlash('alert', 'le répertoire "'.$nomRep.'" ne contient pas de fichier');
             }
         }
 
-        // on a donc un tableau "names" avec les répertoires et leurs fichiers dedans
+        $listeDir = array_keys($arborescence);                      //Récupération du noms des répertoires
+        $fileSystem = new Filesystem();                             //on crée une instance de Filesystem pour créer les répertoires
+
+        foreach ($listeDir as $dir){
+            $fileSystem -> mkdir("images/test/$dir");          //on crée les répertoires dans le dossier image, où seront stockés les QrCodes
+        }
+
+        foreach ($arborescence as $dir => $files){                  //Dans chaque répertoire source,
+            foreach ($files as $file){                              //Pour chaque fichier
+                $qrCode = new QrCode();                             //on crée le QRCode
+                $qrCode->setText($file -> getFilename());           //TODO mettre l'URL à la place du nom
+                $qrCode->setSize(200);
+                $qrCode->writeFile("images/test/$dir/".($file -> getFilename()).'.png');    //et on écrit le fichier
+            }
+        }
+
+
+
+
+
         //TODO : continuer le code, la partie ci-après de la fonction est ancienne
 
         $mot250 = new Finder();
