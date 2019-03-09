@@ -33,7 +33,7 @@ class MoteursController extends AbstractController
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
-        if($session -> has('menuItemsGenerated'))
+        if($session -> has('menuItemsGenerated'))       //on voit si le menu a déjà été généré
         {
             $menuItems = $session->get('menuItems');
         }
