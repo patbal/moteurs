@@ -8,6 +8,7 @@ use App\Entity\TypeMateriel;
 use App\Form\CarnetMoteurType;
 use DateTime;
 use Endroid\QrCode\QrCode;
+use phpDocumentor\Reflection\Types\Array_;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Tests\Compiler\F;
@@ -44,10 +45,45 @@ class MoteursController extends AbstractController
      */
     public function gestion()
     {
+        //on scanne le répertoire de dépose pour connaître tous les répertoires présents
+        $repertoires = new finder();
+        $repertoires -> directories() -> in('certificats')->sortByName(true);
+            //$repertoires ->files()->name('*.pdf') -> in('certificats/m250/');
+        //directories() -> in('certificats/');
+
+
+
+        //$name = array();
+
+        foreach ($repertoires as $re){
+
+                $files = new Finder();
+                $rep=$re->getFilename();
+                $files -> files() -> name('*.pdf') -> in("$re") -> sortByName(true);
+                if(count($files)>0){
+                    $nomRep='bla';
+                    foreach ($files as $file){
+                        $$re[] = $file ;
+                }
+                        $name = $re->getFilename();
+                        $names["$name"] = $$re;
+
+                }
+                else{
+                    $nomRep = $re -> getFilename();
+                    $this -> addFlash('warning', 'le répertoire "'.$nomRep.'" ne contient pas de fichier');
+                }
+
+        }
+
         return $this->render('moteurs/gestionQRCodes.html.twig', [
             'controller_name' => 'MoteursController',
+            'repertoires' => $repertoires,
+            'names'=>$names,
+            'nomRep'=>$nomRep,
         ]);
     }
+    //TODO : enlever le code test ci-dessus et dans le twig correspondant
 
     /**
      * @IsGranted("ROLE_SUPER_ADMIN")
@@ -56,6 +92,34 @@ class MoteursController extends AbstractController
     public function gen_qr_code()
     {
         //on utilise Finder pour lire le répertoire des PDF
+
+        //on scanne le répertoire de dépose pour connaître tous les répertoires présents, classés par ordre alphabétique
+        $repertoires = new finder();
+        $repertoires ->directories() -> in('certificats') -> sortByName(true);
+
+        //
+        foreach ($repertoires as $rep){
+            $files = new Finder();
+            $files -> files() -> name('*.pdf') -> in("$rep") -> sortByName(true); //on liste les fichiers du répertoire
+
+            //s'il y a des fichiers dans le répertoire, on injecte leur objet dans un tableau
+            if(count($files)>0){
+                foreach ($files as $file){
+                    $$re[] = $file;                         //le tableau prend le nom du répertoire scanné, et chaque objet est stocké dans le tableau
+                }
+                $name = $rep->getFilename();                //on récupère le nom de la clef du tableau
+                $names["$name"] = $$re;                     //et on injecte les objets Finder fichier du répertoire dans le tableau
+            }
+
+            else{
+                $nomRep = $re -> getFilename();
+                $this -> addFlash('warning', 'le répertoire "'.$nomRep.'" ne contient pas de fichier');
+            }
+        }
+
+        // on a donc un tableau "names" avec les répertoires et leurs fichiers dedans
+        //TODO : continuer le code, la partie ci-après de la fonction est ancienne
+
         $mot250 = new Finder();
         $mot500 = new Finder();
         $mot1000 = new Finder();

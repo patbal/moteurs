@@ -10,7 +10,14 @@
 {% endblock %}
 
 {% block moteurs_body %}
-    <p></p>
+    <p>{{ dump(repertoires) }}</p>
+    <p>{% for rep in repertoires %}
+        {{ rep|length }}{{ dump(rep) }}
+    {% endfor %}
+    names : {{ dump(names) }}, {{ nomRep }}
+        {% for name in names %}
+    {{ name|length }}{{ dump(name) }}
+    {% endfor %}
     <div class="container">
         <br><br>
         <div class="row">
