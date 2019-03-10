@@ -19,6 +19,17 @@ class MoteurRepository extends ServiceEntityRepository
         parent::__construct($registry, Moteur::class);
     }
 
+
+    public function findAllOrdered(){
+        return $this->createQueryBuilder('m')
+            -> orderBy('m.type', 'ASC')
+            -> orderBy('m.typeMoteur', 'ASC')
+            -> getQuery()
+            -> getResult()
+        ;
+    }
+
+
     // /**
     //  * @return Moteur[] Returns an array of Moteur objects
     //  */

@@ -9,6 +9,7 @@ use App\Form\CarnetMoteurType;
 use DateTime;
 use Endroid\QrCode\QrCode;
 use phpDocumentor\Reflection\Types\Array_;
+use function PHPSTORM_META\type;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Tests\Compiler\F;
@@ -39,16 +40,29 @@ class MoteursController extends AbstractController
         }
         Else{
             $tousAppareils = $this -> getDoctrine() -> getRepository(Moteur::class) -> findAll();
-            $coupleRef = array();
+            $typeMaterielRef = '';
+            $menuItems = array();
 
-            foreach ($tousAppareils as $appareil){
-                $typeMateriel = $appareil -> getType() -> getNomComplet();
-                $serie = $appareil -> getTypeMoteur();
-                $couple = array($serie, $typeMateriel);
+            foreach ($tousAppareils as $appareil) {
+                $typeMateriel = $appareil->getType()->getNomComplet();
+                $serie = $appareil->getTypeMoteur();
 
-                if ($couple !== $coupleRef){
-                    $menuItems[]=[$serie => $typeMateriel];
-                    $coupleRef = $couple;
+                if ($typeMateriel !== $typeMaterielRef) {
+                    $listeType[] = $typeMateriel;
+                    if (!isset($$typeMateriel)) {
+                        $$typeMateriel = array();
+                    }
+                    $typeMaterielRef = $typeMateriel;
+                }
+
+                if (!in_array($serie, $$typeMateriel)) {
+                    ${$typeMateriel}[] = $serie;
+                }
+            }
+
+            foreach ($listeType as $type){
+                if(isset($$type)){
+                    $menuItems[] = $$type;
                 }
             }
             $session -> set('menuItemsGenerated', true);
@@ -80,8 +94,9 @@ class MoteursController extends AbstractController
      * @IsGranted("ROLE_SUPER_ADMIN")
      * @Route("/genqr", name="genQRCodes")
      */
-    public function gen_qr_code()
+    public function gen_qr_code(SessionInterface $session)
     {
+        $session ->remove('menuItemsGenerated');
         $em = $this -> getDoctrine() -> getManager();
 
         //on scanne le répertoire de dépose pour connaître tous les répertoires présents
@@ -116,7 +131,7 @@ class MoteursController extends AbstractController
 
         foreach ($arborescence as $dir => $files){                  //Dans chaque répertoire source,
             $typeMat = array();
-            $typeMat = explode('-', $dir);
+            $typeMat = explode('_', $dir);
 
             //on récupère l'objet typeMateriel pour la requête dans l'objet moteur
             $typeMateriel = $this -> getDoctrine() -> getRepository(TypeMateriel::class) -> findOneBy([
