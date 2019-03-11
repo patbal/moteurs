@@ -21,6 +21,9 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
+//TODO: développer un menu dynamique
+//TODO: refaire le contrôleur de chaque catégorie
+
 class MoteursController extends AbstractController
 {
     /**
