@@ -39,9 +39,9 @@ class MoteursController extends AbstractController
 
         if($session -> has('menuItemsGenerated'))       //on voit si le menu a déjà été généré
         {
-            $menuItems = $session->get('menuItems');
+            $menuItems = $session->get('menuItems');    //s'il l'a été on l'utilise
         }
-        Else{
+        Else{                                                 //sinon on le crée
             $tousAppareils = $this -> getDoctrine() -> getRepository(Moteur::class) -> findAll();
             $typeMaterielRef = '';
             $menuItems = array();
@@ -54,6 +54,7 @@ class MoteursController extends AbstractController
                     $listeType[] = $typeMateriel;
                     if (!isset($$typeMateriel)) {
                         $$typeMateriel = array();
+                        ${$typeMateriel}[] = $typeMateriel;
                     }
                     $typeMaterielRef = $typeMateriel;
                 }
@@ -74,6 +75,7 @@ class MoteursController extends AbstractController
 
         if(($session->has('menuReload')) && $session->get('menuReload')){
             $session->set('menuReload', false);
+            $this -> addFlash('notice', 'Les menus ont été mis à jour');
             return $this -> redirectToRoute('index');
         }
 
@@ -135,7 +137,7 @@ class MoteursController extends AbstractController
 
         foreach ($listeDir as $dir){
             $fileSystem -> mkdir("images/test/$dir");          //on crée les répertoires dans le dossier image, où seront stockés les QrCodes
-        }
+        } //TODO: remplacer "test" par "qrcodes"
 
         foreach ($arborescence as $dir => $files){                  //Dans chaque répertoire source,
             $typeMat = array();
@@ -178,7 +180,7 @@ class MoteursController extends AbstractController
                 }
 
                 // s'il y était on ne change que l'URL de son PV et celui du QRCode associé
-                $moteur -> setUrlQRCode('/images/qrcodes/'.$dir.'/'.$nomFichierSansExtension.'.png');
+                $moteur -> setUrlQRCode('/images/test/'.$dir.'/'.$nomFichierSansExtension.'.png'); //TODO: remplacer "test" par "qrcodes"
                 $moteur -> setUrlPV($urlPv);
 
                 $em -> persist($moteur);
@@ -195,71 +197,45 @@ class MoteursController extends AbstractController
 
     /**
      * @IsGranted("ROLE_USER")
-     * @Route("/view/qrCodes/{cat}", name="viewQrCodes")
+     * @Route("/view/qrCodes/{type}/{cat}", name="viewQrCodes")
      * @param string $cat
+     * @param string $type
      * @param SessionInterface $session
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function viewQrCodes(string $cat, SessionInterface $session)
+    public function viewQrCodes(string $cat, string $type, SessionInterface $session) //TODO : s'assurer de la véracité des variables transmises
     {
         // on store $cat dans la session afin de retrouver la route en cas de suppression
-        $session->set('categorie', $cat);
+        $session->set('categorie', $type.'_'.$cat);
 
-        //liste des valeurs que peut prendre $cat
-        $vals = array('m250', 'm500', 'm1000', 'm2000','mall', 'sc400', 'sc500', 'sc1000', 'scall');
+        // on récupère les appareils correspondants dans la bdd
+        $typeEl = $this -> getDoctrine() -> getRepository(TypeMateriel::class) -> findOneBy(
+            [
+                'nomComplet' => $type,
+            ]
+        );
 
-        //si $cat n'st pas dans l'array, -> erreur
-        if(!in_array($cat, $vals))
-        {
-            $this->addFlash('alert', 'Les valeurs personnalisées ne sont pas autorisées dans la barre d\'adresse');
-            return $this->redirectToRoute('index');
-        }
-
-        //si $cat ne contient pas "all", on cherche les moteurs ou sc de la catégorie $cat
-        if (!preg_match('/[all]/', $cat))
-        {
-            $capa = preg_filter('/([a-z]+)(\d*)/', '$2', $cat);
-            $type = preg_filter('/([a-z]+)(\d*)/','$1', $cat);
-            $charge = $capa.'kg';
-            $typeEl = $this -> getDoctrine() -> getRepository(TypeMateriel::class) -> findOneBy(
-                [
-                    'type' => $type,
-                ]
-            );
-            $moteurs = $this -> getDoctrine() -> getRepository(Moteur::class) -> findBy([
-                'type' => $typeEl,
-                'typeMoteur' => $charge,
-                'enService' => true],
-                ['typeMoteur' => 'ASC',
-                 'numeroMoteur' => 'ASC'
-            ]);
-        }
-
-        //si $cat contient "all", on affiche tous les moteurs ou sc
-        if (preg_match('/[all]/', $cat))
-        {
-            $type = preg_filter('/(m|sc)(\w*)/','$1', $cat);
-            $typeEl = $this -> getDoctrine() -> getRepository(TypeMateriel::class) -> findOneBy(
-                [
-                    'type' => $type,
-                ]
-            );
+        if($cat == 'all'){
             $moteurs = $this -> getDoctrine() -> getRepository(Moteur::class) -> findBy([
                 'type' => $typeEl,
                 'enService' => true],
-                ['typeMoteur' => 'ASC',
-                'numeroMoteur' => 'ASC'
-            ]);
-            $charge = '';
+                ['typeMoteur' => 'ASC', 'numeroMoteur' => 'ASC']
+            );
+        }
+        else{
+            $moteurs = $this -> getDoctrine() -> getRepository(Moteur::class) -> findBy([
+                'type' => $typeEl,
+                'typeMoteur' => $cat,
+                'enService' => true],
+                ['typeMoteur' => 'ASC', 'numeroMoteur' => 'ASC']
+            );
         }
 
-        $lev = ($type == 'm') ? 'moteur' : 'stop-chute' ; //pour passage de paramètre à twig
 
         return $this -> render('moteurs/viewQrCodes2.html.twig', array(
             'moteurs' => $moteurs,
             'cat' => $cat,
-            'charge' => $charge,
-            'lev' => $lev,
+            'type' => $type,
         ));
 
     }

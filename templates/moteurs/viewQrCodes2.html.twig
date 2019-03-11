@@ -2,7 +2,7 @@
 
 {% block header %}
     <div id="header" class="card text-center">
-        <h1>Liste des certificats | <span class="badge badge-secondary">{{ moteurs|length }} {{ lev }}{% if moteurs|length > 1 %}s{% endif %} {{ charge }}</span></h1>
+        <h1>Liste des certificats | <span class="badge badge-secondary">{{ moteurs|length }} {{ type }}{% if moteurs|length > 1 %}s{% endif %} {% if cat=="all" %}{% else %}{{ cat }}{% if type=="armoire" %}A{% else %}kg{% endif %}{% endif %}</span></h1>
     </div>
 {% endblock %}
 

@@ -14,7 +14,10 @@
     <div class="container">
     <h1>Bienvenue {{ user.prenom|capitalize }} ! </h1>
 
-        <div>{{ dump(menuItems) }}</div>
+        {#<div>{{ dump(menuItems) }}</div>
+        {% for item in menuItems %}
+            {{ dump(item) }}
+        {% endfor %}#}
         <div>Voici les droits qui vous ont été octroyés : </div>
 
         <div><code>{% for role in user.roles %}{{ role }}<br>{% endfor %}</code></div>
