@@ -69,6 +69,11 @@ class MoteursController extends AbstractController
             $session -> set('menuItems', $menuItems);
         }
 
+        if(($session->has('menuReload')) && $session->get('menuReload')){
+            $session->set('menuReload', false);
+            return $this -> redirectToRoute('index');
+        }
+
 
 
         return $this->render('moteurs/index.html.twig', [
@@ -178,8 +183,10 @@ class MoteursController extends AbstractController
             }
         }
 
+        $session -> set('menuReload', true);
+
         $this -> addFlash('notice', 'QRCodes des moteurs générés');
-        return $this -> redirectToRoute('gestion');
+        return $this -> redirectToRoute('index');
 
     }
 
