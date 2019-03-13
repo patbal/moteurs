@@ -6,6 +6,7 @@ use App\Entity\CarnetMoteur;
 use App\Entity\Moteur;
 use App\Entity\TypeMateriel;
 use App\Form\CarnetMoteurType;
+use App\Service\MenuGenerator;
 use DateTime;
 use Endroid\QrCode\QrCode;
 use phpDocumentor\Reflection\Types\Array_;
@@ -37,55 +38,27 @@ class MoteursController extends AbstractController
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
-        if($session -> has('menuItemsGenerated'))       //on voit si le menu a déjà été généré
+        if(($session -> has('menuItems')) && ($session -> get('menuReload') == false))        //on voit si le menu a déjà été généré
         {
-            $menuItems = $session->get('menuItems');    //s'il l'a été on l'utilise
+            $menuItems = $session->get('menuItems');     //s'il l'a été on l'utilise
         }
-        Else{                                                 //sinon on le crée
-            $tousAppareils = $this -> getDoctrine() -> getRepository(Moteur::class) -> findAll();
-            $typeMaterielRef = '';
-            $menuItems = array();
+        Else{                                                   //sinon on le crée
+            $appareils = $this -> getDoctrine() -> getRepository(Moteur::class) -> findAll();
 
-            foreach ($tousAppareils as $appareil) {
-                $typeMateriel = $appareil->getType()->getNomComplet();
-                $serie = $appareil->getTypeMoteur();
+            $menu = new MenuGenerator($appareils);              //on crée le menu via le service MenuGenerator
+            $menuItems = $menu -> generateMenu();
 
-                if ($typeMateriel !== $typeMaterielRef) {
-                    $listeType[] = $typeMateriel;
-                    if (!isset($$typeMateriel)) {
-                        $$typeMateriel = array();
-                        ${$typeMateriel}[] = $typeMateriel;
-                    }
-                    $typeMaterielRef = $typeMateriel;
-                }
-
-                if (!in_array($serie, $$typeMateriel)) {
-                    ${$typeMateriel}[] = $serie;
-                }
-            }
-
-            foreach ($listeType as $type){
-                if(isset($$type)){
-                    $menuItems[] = $$type;
-                }
-            }
             $session -> set('menuItemsGenerated', true);
             $session -> set('menuItems', $menuItems);
-        }
-
-        if(($session->has('menuReload')) && $session->get('menuReload')){
-            $session->set('menuReload', false);
             $this -> addFlash('notice', 'Les menus ont été mis à jour');
-            return $this -> redirectToRoute('index');
+            $session->set('menuReload', false);
         }
-
 
 
         return $this->render('moteurs/index.html.twig', [
             'controller_name' => 'HomePage',
             'titre' => 'Carnet Moteurs',
             'user' => $user,
-            'menuItems' => $menuItems,
         ]);
     }
 
@@ -173,13 +146,14 @@ class MoteursController extends AbstractController
                 if(!$moteur) //s'il n'est pas dans la base on le crée
                 {
                     $moteur = new Moteur();
-                    $moteur -> setTypeMoteur($typeMat[1]);
-                    $moteur -> setEnService(true);
-                    $moteur -> setNumeroMoteur($nomFichierSansExtension);
-                    $moteur -> setType($typeMateriel);
+
                 }
 
-                // s'il y était on ne change que l'URL de son PV et celui du QRCode associé
+                // s'il y était on l'update
+                $moteur -> setTypeMoteur($typeMat[1]);
+                $moteur -> setEnService(true);
+                $moteur -> setNumeroMoteur($nomFichierSansExtension);
+                $moteur -> setType($typeMateriel);
                 $moteur -> setUrlQRCode('/images/test/'.$dir.'/'.$nomFichierSansExtension.'.png'); //TODO: remplacer "test" par "qrcodes"
                 $moteur -> setUrlPV($urlPv);
 
