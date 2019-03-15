@@ -9,11 +9,8 @@ use App\Form\CarnetMoteurType;
 use App\Service\MenuGenerator;
 use DateTime;
 use Endroid\QrCode\QrCode;
-use phpDocumentor\Reflection\Types\Array_;
-use function PHPSTORM_META\type;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Tests\Compiler\F;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,8 +19,6 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-//TODO: développer un menu dynamique
-//TODO: refaire le contrôleur de chaque catégorie
 
 class MoteursController extends AbstractController
 {
@@ -38,11 +33,8 @@ class MoteursController extends AbstractController
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
-        if(($session -> has('menuItems')) && ($session -> get('menuReload') == false))        //on voit si le menu a déjà été généré
-        {
-            $menuItems = $session->get('menuItems');     //s'il l'a été on l'utilise
-        }
-        Else{                                                   //sinon on le crée
+        //si menuItems n'est pas en session, ou si menuReload est true, on crée les menus
+        if(!($session -> has('menuItems')) || ($session -> get('menuReload') == true)){
             $appareils = $this -> getDoctrine() -> getRepository(Moteur::class) -> findAll();
 
             $menu = new MenuGenerator($appareils);              //on crée le menu via le service MenuGenerator
@@ -113,7 +105,6 @@ class MoteursController extends AbstractController
         } //TODO: remplacer "test" par "qrcodes"
 
         foreach ($arborescence as $dir => $files){                  //Dans chaque répertoire source,
-            $typeMat = array();
             $typeMat = explode('_', $dir);
 
             //on récupère l'objet typeMateriel pour la requête dans l'objet moteur
