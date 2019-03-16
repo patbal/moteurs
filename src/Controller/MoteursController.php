@@ -207,59 +207,41 @@ class MoteursController extends AbstractController
 
     /**
      * @IsGranted("ROLE_ADMIN")
-     * @Route("/print/qrCodes/{cat}", name="printQrCodes")
+     * @Route("/print/qrCodes/{type}/{cat}", name="printQrCodes")
+     * @param string $cat
+     * @param SessionInterface $session
+     * @param string $type
      */
-    public function printQrCodes(string $cat)
+    public function printQrCodes(string $cat, string $type, SessionInterface $session)
     {
 
-        $vals = array('m250', 'm500', 'm1000', 'm2000','mall', 'sc400', 'sc500', 'sc1000', 'scall');
+        // on récupère les appareils correspondants dans la bdd
+        $typeEl = $this -> getDoctrine() -> getRepository(TypeMateriel::class) -> findOneBy(
+            [
+                'nomComplet' => $type,
+            ]
+        );
 
-        if(!in_array($cat, $vals))
-        {
-            $this->addFlash('alert', 'Les valeurs personnalisées ne sont pas autorisées dans la barre d\'adresse');
-            return $this->redirectToRoute('index');
-        }
-
-        if (!preg_match('/[all]/', $cat))
-        {
-            $capa = preg_filter('/([a-z]+)(\d*)/', '$2', $cat);
-            $type = preg_filter('/([a-z]+)(\d*)/','$1', $cat);
-            $charge = $capa.'kg';
-            $typeEl = $this -> getDoctrine() -> getRepository(TypeMateriel::class) -> findOneBy(
-                [
-                    'type' => $type,
-                ]
-            );
+        if($cat == 'all'){
             $moteurs = $this -> getDoctrine() -> getRepository(Moteur::class) -> findBy([
                 'type' => $typeEl,
-                'typeMoteur' => $charge],[
-                'numeroMoteur' => 'ASC',
-            ]);
-        }
-
-        //si $cat contient "all", on affiche tous les moteurs ou sc
-        if (preg_match('/[all]/', $cat))
-        {
-            $type = preg_filter('/(m|sc)(\w*)/','$1', $cat);
-            $typeEl = $this -> getDoctrine() -> getRepository(TypeMateriel::class) -> findOneBy(
-                [
-                    'type' => $type,
-                ]
+                'enService' => true],
+                ['typeMoteur' => 'ASC', 'numeroMoteur' => 'ASC']
             );
-            $moteurs = $this -> getDoctrine() -> getRepository(Moteur::class) -> findBy([
-                'type' => $typeEl],[
-                'numeroMoteur' => 'ASC',
-            ]);
-            $charge = '';
         }
-
-        $lev = ($type == 'm') ? 'moteur' : 'stop-chute' ; //pour passage de paramètre à twig
+        else{
+            $moteurs = $this -> getDoctrine() -> getRepository(Moteur::class) -> findBy([
+                'type' => $typeEl,
+                'typeMoteur' => $cat,
+                'enService' => true],
+                ['typeMoteur' => 'ASC', 'numeroMoteur' => 'ASC']
+            );
+        }
 
         return $this -> render('moteurs/impressionQRCodes.html.twig', array(
             'moteurs' => $moteurs,
             'cat' => $cat,
-            'charge' => $charge,
-            'lev'=> $lev,
+            'type' => $type,
         ));
 
     }

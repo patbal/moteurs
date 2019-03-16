@@ -41,13 +41,13 @@
                                href="#"
                                role="button"
                                aria-haspopup="true"
-                               aria-expanded="false"><i class="fas fa-list-ul"></i></a>
+                               aria-expanded="false"><i class="fas fa-list-ul"></i>PV / Carnets</a>
                             <div class="dropdown-menu" aria-labelledby="Preview">
                                 {% set menuItems = app.session.get('menuItems') %}
                                 {% for  menuItem in menuItems %}
                                     <h6 class="dropdown-header">QRCodes {{ menuItem[0] }}</h6>
                                     {% for i in 1..(menuItem|length - 1) %}
-                                        <a class="dropdown-item" href="{{ path('viewQrCodes', {'type': menuItem[0],'cat': menuItem[i]}) }}">{{ menuItem[i] }}{% if menuItem[0]=="armoire" %}A{% else %}kg{% endif %}</a>
+                                        <a class="dropdown-item" href="{{ path('viewQrCodes', {'type': menuItem[0],'cat': menuItem[i]}) }}">{{ menuItem[i] }}{% if menuItem[0]=="armoire" %}{% else %}kg{% endif %}</a>
                                     {% endfor %}
                                     <a class="dropdown-item" href="{{ path('viewQrCodes', {'type': menuItem[0],'cat': 'all'}) }}">Tous</a>
                                 {% endfor %}
@@ -56,13 +56,34 @@
                             </div>
                         </li>
                         {% if is_granted('ROLE_ADMIN') %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('gestion') }}"><i class="fas fa-cogs"></i>
-                            </a>
-                        </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle"
+                                   data-toggle="dropdown"
+                                   id="Preview"
+                                   href="#"
+                                   role="button"
+                                   aria-haspopup="true"
+                                   aria-expanded="false"><i class="fas fa-print"></i>Impression</a>
+                                <div class="dropdown-menu" aria-labelledby="Preview">
+                                    {% set menuItems = app.session.get('menuItems') %}
+                                    {% for  menuItem in menuItems %}
+                                        <h6 class="dropdown-header">QRCodes {{ menuItem[0] }}</h6>
+                                        {% for i in 1..(menuItem|length - 1) %}
+                                            <a class="dropdown-item" href="{{ path('printQrCodes', {'type': menuItem[0],'cat': menuItem[i]}) }}">{{ menuItem[i] }}{% if menuItem[0]=="armoire" %}{% else %}kg{% endif %}</a>
+                                        {% endfor %}
+                                        <a class="dropdown-item" href="{{ path('printQrCodes', {'type': menuItem[0],'cat': 'all'}) }}">Tous</a>
+                                    {% endfor %}
+                                </div>
+                            </li>
+                        {% endif %}
+                        {% if is_granted('ROLE_SUPER_ADMIN') %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('gestion') }}"><i class="fas fa-cogs"></i>Gestion
+                                </a>
+                            </li>
                         {% endif %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_logout') }}"><i class="fas fa-door-open"></i>
+                            <a class="nav-link" href="{{ path('app_logout') }}"><i class="fas fa-door-open"></i>Logout
                             </a>
                         </li>
                     </ul>
